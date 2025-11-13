@@ -1,0 +1,85 @@
+body {
+  font-family: 'Georgia', serif;
+  background-color: #f9f4e6;
+  color: #3b2c1a;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  margin-top: 40px;
+}
+
+.logo-section {
+  display: inline-block;
+}
+
+.logo {
+  width: 80px;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+h1 {
+  font-size: 1.5em;
+  margin: 5px 0;
+  text-transform: lowercase;
+}
+
+.tagline {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 25px;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+nav a {
+  text-decoration: none;
+  color: #b97a16;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: #ffb300;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+  max-width: 900px;
+  margin: 0 auto 60px;
+}
+
+.card {
+  background: #fff7e5;
+  padding: 10px;
+  border-radius: 6px;
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card img {
+  width: 100%;
+  border-radius: 4px;
+}
+
+.card p {
+  margin-top: 8px;
+  font-size: 0.85em;
+  color: #3b2c1a;
+  letter-spacing: 0.5px;
+}
