@@ -71,6 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   triggers.forEach((trigger, index) => {
+    const altText = trigger.dataset.alt || trigger.querySelector('img')?.alt || '';
+    if (altText && !trigger.hasAttribute('aria-label')) {
+      trigger.setAttribute('aria-label', altText);
+    }
+
     trigger.addEventListener('click', () => openLightbox(index));
     trigger.addEventListener('keydown', (event) => {
       if (event.key === 'Enter' || event.key === ' ') {
