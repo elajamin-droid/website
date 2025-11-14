@@ -3,16 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Games - Nacef el Ajami</title>
+  <title>Playable Labs · Nacef el Ajami</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="detail-page">
-  <header>
-    <a class="back-link" href="index.html">&larr; Back to portfolio</a>
-    <h1>Games</h1>
-  </header>
-  <main>
-    <section class="detail-gallery">
+  <main class="detail-shell">
+    <header class="detail-header">
+      <a class="back-link" href="index.html#collections">&larr; Back to the universe</a>
+      <div class="detail-title">
+        <span>Curated collection</span>
+        <h1>Playable Labs</h1>
+      </div>
+    </header>
+
+    <p class="detail-summary">
+      Game prototypes are experiments in interaction and mood. Each prototype iterates on mechanic design, level feel, and
+      visual storytelling—all while building documentation so collaborators can expand the experience.
+    </p>
+
+    <div class="detail-meta">
+      <div>
+        <strong>Disciplines</strong>
+        Game design · Technical art · UI/UX
+      </div>
+      <div>
+        <strong>Tools</strong>
+        Unreal Engine · Unity · Houdini
+      </div>
+      <div>
+        <strong>Focus</strong>
+        Player emotion &amp; environmental storytelling
+      </div>
+    </div>
+
+    <section class="detail-gallery" aria-label="Game development gallery">
       <button class="detail-item" type="button" data-full="images/Games/Materials2.webp" data-alt="Stylized environment concept">
         <img src="images/Games/Materials2.webp" alt="Stylized environment concept" loading="lazy" />
       </button>
@@ -32,7 +59,20 @@
         <img src="images/Games/media4.gif" alt="Animated gameplay loop" loading="lazy" />
       </button>
     </section>
+
+    <section class="detail-notes">
+      <h2>Prototype philosophy</h2>
+      <p>
+        Rapid blockouts evolve into living design documents with embedded gifs, shader breakdowns, and control schemes. I
+        emphasise collaborative iteration—each build ships with notes for programmers, sound designers, and writers.
+      </p>
+      <p>
+        Current experiments explore tactile sand manipulation, co-op storytelling, and responsive lighting systems that
+        react to player agency.
+      </p>
+    </section>
   </main>
+
   <script src="script.js"></script>
 </body>
 </html>

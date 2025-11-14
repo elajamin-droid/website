@@ -3,22 +3,47 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Animations - Nacef el Ajami</title>
+  <title>Cinematic Motion · Nacef el Ajami</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="detail-page">
-  <header>
-    <a class="back-link" href="index.html">&larr; Back to portfolio</a>
-    <h1>Animations</h1>
-  </header>
-  <main>
+  <main class="detail-shell">
+    <header class="detail-header">
+      <a class="back-link" href="index.html#collections">&larr; Back to the universe</a>
+      <div class="detail-title">
+        <span>Curated collection</span>
+        <h1>Cinematic Motion</h1>
+      </div>
+    </header>
+
+    <p class="detail-summary">
+      Motion transforms atmosphere into emotion. These loops blend traditional animation sensibilities with modern
+      pipeline tricks—combining hand-drawn frames, 3D reference, and shader-based texture treatments for cinematic beats
+      ready for film or interactive media.
+    </p>
+
+    <div class="detail-meta">
+      <div>
+        <strong>Disciplines</strong>
+        Animation · Motion design · Direction
+      </div>
+      <div>
+        <strong>Tools</strong>
+        Toon Boom · After Effects · Unreal Engine
+      </div>
+      <div>
+        <strong>Focus</strong>
+        Rhythm, emotion, and cinematography
+      </div>
+    </div>
+
     <div class="video-container">
       <iframe
-        width="853"
-        height="480"
         src="https://www.youtube.com/embed/BMqpDYKC6Ms"
         title="Moois Genoeg"
-        frameborder="0"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         referrerpolicy="strict-origin-when-cross-origin"
         allowfullscreen
@@ -26,12 +51,25 @@
       ></iframe>
     </div>
 
-    <section class="detail-gallery">
+    <section class="detail-gallery" aria-label="Animation stills">
       <button class="detail-item" type="button" data-full="images/Games/media4.gif" data-alt="Looping hand-drawn animation sequence">
         <img src="images/Games/media4.gif" alt="Looping hand-drawn animation sequence" loading="lazy" />
       </button>
     </section>
+
+    <section class="detail-notes">
+      <h2>Animation approach</h2>
+      <p>
+        I build custom timing charts for each loop, allowing subtle slow-ins and snap-outs. Texture overlays are baked
+        through a shader pass that mimics charcoal on glass for a tactile finish.
+      </p>
+      <p>
+        The collection currently fuels an immersive installation—projected at 180°—where soundscapes shift based on the
+        audience’s proximity to each animated character.
+      </p>
+    </section>
   </main>
+
   <script src="script.js"></script>
 </body>
 </html>
