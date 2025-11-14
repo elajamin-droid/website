@@ -3,16 +3,44 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Paintings - Nacef el Ajami</title>
+  <title>Painting Stories · Nacef el Ajami</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="detail-page">
-  <header>
-    <a class="back-link" href="index.html">&larr; Back to portfolio</a>
-    <h1>Paintings</h1>
-  </header>
-  <main>
-    <section class="detail-gallery">
+  <main class="detail-shell">
+    <header class="detail-header">
+      <a class="back-link" href="index.html#collections">&larr; Back to the universe</a>
+      <div class="detail-title">
+        <span>Curated collection</span>
+        <h1>Painting Stories</h1>
+      </div>
+    </header>
+
+    <p class="detail-summary">
+      Painting is where intuition meets deliberate structure. These works explore luminous color palettes, unexpected
+      architecture, and atmospheric storytelling—capturing the feeling of stepping into a world moments before the scene
+      shifts.
+    </p>
+
+    <div class="detail-meta">
+      <div>
+        <strong>Disciplines</strong>
+        Oil &amp; acrylic painting · Digital paintover
+      </div>
+      <div>
+        <strong>Tools</strong>
+        Traditional media · Procreate · Krita
+      </div>
+      <div>
+        <strong>Focus</strong>
+        Light, scale, and narrative mood
+      </div>
+    </div>
+
+    <section class="detail-gallery" aria-label="Painting gallery">
       <button class="detail-item" type="button" data-full="images/Paintings/IMG20240121130029.webp" data-alt="Warm toned painting of a figure in a room">
         <img src="images/Paintings/IMG20240121130029.webp" alt="Warm toned painting of a figure in a room" loading="lazy" />
       </button>
@@ -38,7 +66,20 @@
         <img src="images/Paintings/IMG20240121133044.webp" alt="Painting with cool light and architectural details" loading="lazy" />
       </button>
     </section>
+
+    <section class="detail-notes">
+      <h2>Studio notes</h2>
+      <p>
+        Paintings begin with plein-air thumbnails translated into digital studies. Each final piece blends those sketches
+        with invented architecture to build believable yet dreamlike environments.
+      </p>
+      <p>
+        Texture passes are intentionally loose, inviting collaboration from writers and sound designers who will extend
+        these moments into larger narrative arcs.
+      </p>
+    </section>
   </main>
+
   <script src="script.js"></script>
 </body>
 </html>

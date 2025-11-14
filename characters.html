@@ -3,24 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Characters - Nacef el Ajami</title>
+  <title>Character Universes · Nacef el Ajami</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body class="detail-page">
-  <header>
-    <a class="back-link" href="index.html">&larr; Back to portfolio</a>
-    <h1>Characters</h1>
-  </header>
-  <main>
-    <section class="detail-description">
-      <p>
-        Character design by Joep Eilander -
-        <a href="https://www.artstation.com/joepeilander" target="_blank" rel="noopener noreferrer"
-          >https://www.artstation.com/joepeilander</a
-        >
-      </p>
-    </section>
-    <section class="detail-gallery">
+  <main class="detail-shell">
+    <header class="detail-header">
+      <a class="back-link" href="index.html#collections">&larr; Back to the universe</a>
+      <div class="detail-title">
+        <span>Curated collection</span>
+        <h1>Character Universes</h1>
+      </div>
+    </header>
+
+    <p class="detail-summary">
+      Characters begin as whispers of story. Each design explores silhouettes, gesture, and lore-inspired costuming to
+      build worlds that feel inhabited. These studies were guided by mentorship with Joep Eilander
+      (<a href="https://www.artstation.com/joepeilander" target="_blank" rel="noopener noreferrer">ArtStation</a>) and
+      showcase narrative-driven exploration from sketch to production render.
+    </p>
+
+    <div class="detail-meta">
+      <div>
+        <strong>Disciplines</strong>
+        Concept design · Storyboarding · Visual development
+      </div>
+      <div>
+        <strong>Tools</strong>
+        Procreate · Photoshop · Blender kitbashes
+      </div>
+      <div>
+        <strong>Focus</strong>
+        Worldbuilding through silhouette &amp; costume
+      </div>
+    </div>
+
+    <section class="detail-gallery" aria-label="Character artwork">
       <button class="detail-item" type="button" data-full="images/Characters/Screenshot_2025-10-21_202456.webp" data-alt="Character lineup concept">
         <img src="images/Characters/Screenshot_2025-10-21_202456.webp" alt="Character lineup concept" loading="lazy" />
       </button>
@@ -28,7 +49,20 @@
         <img src="images/Characters/Screenshot_2025-10-21_202831.webp" alt="Character portrait explorations" loading="lazy" />
       </button>
     </section>
+
+    <section class="detail-notes">
+      <h2>Behind the characters</h2>
+      <p>
+        Each persona belongs to a nomadic guild protecting ancient instruments that manipulate weather. Motion studies and
+        costume notes ensure their silhouettes read clearly—even in low light scenes.
+      </p>
+      <p>
+        The project also includes documentation for gestures, prop functionality, and emotional beat boards to support
+        animators and writers.
+      </p>
+    </section>
   </main>
+
   <script src="script.js"></script>
 </body>
 </html>

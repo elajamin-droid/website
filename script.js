@@ -1,4 +1,59 @@
 document.addEventListener('DOMContentLoaded', () => {
+  const body = document.body;
+  const themeToggle = document.querySelector('[data-theme-toggle]');
+  const storedTheme = window.localStorage?.getItem('nea-theme');
+
+  if (storedTheme === 'light') {
+    body.classList.add('is-light');
+  } else if (storedTheme === 'dark') {
+    body.classList.remove('is-light');
+  }
+
+  themeToggle?.addEventListener('click', () => {
+    const isLight = body.classList.toggle('is-light');
+    try {
+      window.localStorage.setItem('nea-theme', isLight ? 'light' : 'dark');
+    } catch (error) {
+      // Storage might be unavailable; fail silently.
+    }
+  });
+
+  const yearEl = document.getElementById('year');
+  if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
+  }
+
+  if (window.matchMedia('(pointer: fine)').matches) {
+    const tiltTargets = document.querySelectorAll('[data-tilt]');
+    tiltTargets.forEach((target) => {
+      const resetTilt = () => {
+        target.style.transform = '';
+        target.classList.remove('is-hovering');
+      };
+
+      target.addEventListener('pointerenter', () => {
+        target.classList.add('is-hovering');
+      });
+
+      target.addEventListener('pointerleave', resetTilt);
+
+      target.addEventListener('pointermove', (event) => {
+        const rect = target.getBoundingClientRect();
+        const relativeX = (event.clientX - rect.left) / rect.width;
+        const relativeY = (event.clientY - rect.top) / rect.height;
+
+        const tiltX = (0.5 - relativeY) * 16;
+        const tiltY = (relativeX - 0.5) * 16;
+
+        target.style.transform = `rotateX(${tiltX.toFixed(2)}deg) rotateY(${tiltY.toFixed(2)}deg)`;
+        target.style.setProperty('--tilt-x', `${relativeX * 100}%`);
+        target.style.setProperty('--tilt-y', `${relativeY * 100}%`);
+      });
+
+      target.addEventListener('focusout', resetTilt);
+    });
+  }
+
   const triggers = Array.from(document.querySelectorAll('.detail-item'));
   if (!triggers.length) {
     return;

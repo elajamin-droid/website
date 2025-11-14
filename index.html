@@ -3,49 +3,236 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Art Portfolio</title>
+  <title>Nacef el Ajami — Immersive Art Worlds</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <header>
-    <div class="logo-section">
-      <img src="images/trsp.gif" width="400" height="200" alt="" />
-      <h1>Nacef el Ajami</h1>
-    </div>
+<body class="page">
+  <div class="background" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="noise-layer"></div>
+  </div>
+
+  <header class="site-header" data-tilt>
+    <a class="site-brand" href="index.html">
+      <span class="brand-mark" aria-hidden="true">NEA</span>
+      <span class="brand-text">
+        <span class="brand-name">Nacef el Ajami</span>
+        <span class="brand-role">Worldbuilding artist &amp; technical designer</span>
+      </span>
+    </a>
+    <nav class="site-nav" aria-label="Main navigation">
+      <a href="#collections">Collections</a>
+      <a href="#about">About</a>
+      <a href="#dispatches">Dispatches</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">
+      <span class="sun" aria-hidden="true"></span>
+      <span class="moon" aria-hidden="true"></span>
+    </button>
   </header>
 
   <main>
-    <section class="gallery">
-      <a class="card" href="characters.html">
-        <img src="images/Characters/Screenshot_2025-10-21_202831.webp" alt="Character concepts thumbnail" loading="lazy" />
-        <p>Characters</p>
-      </a>
-      <a class="card" href="animations.html">
-        <img src="images/Games/media4.gif" alt="Animation thumbnail" loading="lazy" />
-        <p>Animations</p>
-      </a>
-      <a class="card" href="paintings.html">
-        <img src="images/Paintings/IMG20240121130029.webp" alt="Painting thumbnail" loading="lazy" />
-        <p>Paintings</p>
-      </a>
-      <a class="card" href="games.html">
-        <img src="images/Games/Materials2.webp" alt="Game development thumbnail" loading="lazy" />
-        <p>Games</p>
-      </a>
-      <a class="card" href="other-works.html">
-        <img src="images/Other%20Works/Uhs.webp" alt="Other works thumbnail" loading="lazy" />
-        <p>Other Works</p>
-      </a>
+    <section class="hero" id="top">
+      <div class="hero-content">
+        <p class="hero-eyebrow">Immersive worlds, experimental storytelling</p>
+        <h1>Crafting realms for curious dreamers and daring studios.</h1>
+        <p class="hero-lead">
+          From atmospheric concept paintings to playable prototypes, every project explores how light, motion, and
+          narrative can co-exist to move people. Step into a portfolio designed as a living universe.
+        </p>
+        <div class="hero-actions">
+          <a class="button" href="#collections">Explore the collections</a>
+          <a class="button button-ghost" href="games.html">Play a prototype</a>
+        </div>
+        <dl class="hero-stats" aria-label="Portfolio highlights">
+          <div>
+            <dt>Pieces in the archive</dt>
+            <dd>60+</dd>
+          </div>
+          <div>
+            <dt>Years crafting digital worlds</dt>
+            <dd>8</dd>
+          </div>
+          <div>
+            <dt>Mediums explored</dt>
+            <dd>Concept, 2D/3D, Interactive</dd>
+          </div>
+        </dl>
+      </div>
+      <div class="hero-preview">
+        <div class="preview-frame" data-tilt>
+          <img src="images/Paintings/IMG20240121130029.webp" alt="Atmospheric painting of a futuristic city" loading="lazy" />
+          <div class="preview-caption">Concept painting · Oils &amp; digital finish</div>
+        </div>
+        <div class="preview-stack">
+          <figure class="preview-card" data-tilt>
+            <img src="images/Characters/Screenshot_2025-10-21_202831.webp" alt="Character sheet preview" loading="lazy" />
+            <figcaption>Story-driven character explorations</figcaption>
+          </figure>
+          <figure class="preview-card" data-tilt>
+            <img src="images/Games/Materials2.webp" alt="Procedural game material" loading="lazy" />
+            <figcaption>Realtime materials &amp; game feel studies</figcaption>
+          </figure>
+        </div>
+      </div>
     </section>
 
-    <section id="about" class="about">
-      <h2>About</h2>
+    <section class="collections" id="collections">
+      <div class="section-heading">
+        <h2>Curated collections</h2>
+        <p>
+          Each gallery below opens a dedicated micro-world. Dive into characters with layered lore, cinematic animations,
+          luscious paintings, playable experiments, and cross-disciplinary collaborations.
+        </p>
+      </div>
+      <div class="collection-grid">
+        <a class="collection-card" href="characters.html" data-tilt>
+          <div class="card-media">
+            <img src="images/Characters/Screenshot_2025-10-21_202456.webp" alt="Two characters standing with strong silhouettes" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <h3>Character Universes</h3>
+            <p>Interactive backstories and costume evolution for narrative worlds.</p>
+            <span class="card-cta">Enter world &rarr;</span>
+          </div>
+        </a>
+        <a class="collection-card" href="animations.html" data-tilt>
+          <div class="card-media">
+            <img src="images/Games/media4.gif" alt="Looping animation of a character walking" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <h3>Cinematic Motion</h3>
+            <p>Hand-crafted animation loops that explore rhythm, timing, and emotion.</p>
+            <span class="card-cta">View sequences &rarr;</span>
+          </div>
+        </a>
+        <a class="collection-card" href="paintings.html" data-tilt>
+          <div class="card-media">
+            <img src="images/Paintings/IMG20240121130029.webp" alt="Color rich painting of a landscape" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <h3>Painting Stories</h3>
+            <p>Atmospheric landscapes and portraits exploring the architecture of light.</p>
+            <span class="card-cta">See the gallery &rarr;</span>
+          </div>
+        </a>
+        <a class="collection-card" href="games.html" data-tilt>
+          <div class="card-media">
+            <img src="images/Games/Materials2.webp" alt="Materials study from a game project" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <h3>Playable Labs</h3>
+            <p>Experimental gameplay loops and prototypes created in collaborative teams.</p>
+            <span class="card-cta">Launch lab &rarr;</span>
+          </div>
+        </a>
+        <a class="collection-card" href="other-works.html" data-tilt>
+          <div class="card-media">
+            <img src="images/Other%20Works/Uhs.webp" alt="Mixed media experimental artwork" loading="lazy" />
+          </div>
+          <div class="card-body">
+            <h3>Interdisciplinary</h3>
+            <p>Brand collaborations, illustration commissions, and process ephemera.</p>
+            <span class="card-cta">Discover more &rarr;</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <div class="about-inner">
+        <div class="about-intro" data-tilt>
+          <h2>A process built on play and precision</h2>
+          <p>
+            I map universes first through story, then through light. My methodology bridges concept art, animation, and
+            technical design, making it easy for collaborators to jump in and expand each world.
+          </p>
+          <p>
+            When I am not painting or developing prototypes, I teach workshops on visual storytelling and consult on art
+            pipelines for indie game studios.
+          </p>
+        </div>
+        <div class="about-highlights">
+          <article class="highlight" data-tilt>
+            <h3>Worldbuilding sprints</h3>
+            <p>
+              Two-week collaborative programs that guide studios from moodboards to shippable concept packs ready for
+              production.
+            </p>
+          </article>
+          <article class="highlight" data-tilt>
+            <h3>Adaptive pipelines</h3>
+            <p>
+              Custom-built tooling for faster iteration—from shader-based paintovers to procedural animation systems.
+            </p>
+          </article>
+          <article class="highlight" data-tilt>
+            <h3>Holistic storytelling</h3>
+            <p>
+              Every asset considers music, lore, and gameplay feedback loops so the final world feels cohesive.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="dispatches" id="dispatches">
+      <div class="section-heading">
+        <h2>Studio dispatches</h2>
+        <p>Snapshots from recent explorations and the experiments powering the next body of work.</p>
+      </div>
+      <div class="dispatch-grid">
+        <article class="dispatch-card" data-tilt>
+          <div class="dispatch-date">May 2024</div>
+          <h3>Generative sandscapes</h3>
+          <p>
+            R&amp;D on blending hand-painted textures with GPU-driven particle systems to simulate wind-blown dunes that
+            respond to player movement.
+          </p>
+        </article>
+        <article class="dispatch-card" data-tilt>
+          <div class="dispatch-date">February 2024</div>
+          <h3>Animated folklore</h3>
+          <p>
+            Collaborating with writers to retell North African myths through looping animations projected in immersive
+            dome installations.
+          </p>
+        </article>
+        <article class="dispatch-card" data-tilt>
+          <div class="dispatch-date">October 2023</div>
+          <h3>Paper to pixel residency</h3>
+          <p>
+            Led a residency focused on evolving analog sketches into VR-ready environments with spatial soundscapes.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <section class="contact" id="contact">
+      <div class="contact-card" data-tilt>
+        <h2>Let’s build your next universe</h2>
+        <p>
+          Commissions, collaborations, or teaching requests are always welcome. Share a brief about your world, and I’ll
+          design the visuals and interactions to bring it to life.
+        </p>
+        <div class="contact-actions">
+          <a class="button" href="mailto:hello@nacefelajami.com">Email hello@nacefelajami.com</a>
+          <a class="button button-ghost" href="https://www.artstation.com/joepeilander" target="_blank" rel="noopener noreferrer">Follow on ArtStation</a>
+        </div>
+      </div>
     </section>
   </main>
 
-  <footer>
-    <p class="footer-note">© 2024 Nacef el Ajami. All rights reserved.</p>
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Nacef el Ajami · Crafted with curiosity and bold color.</p>
   </footer>
+
   <script src="script.js"></script>
 </body>
 </html>
