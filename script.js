@@ -14,8 +14,6 @@ const detailData = {
   },
   characters: {
     title: 'Characters',
-    description:
-      '<p>Character design by Joep Eilander — <a href="https://www.artstation.com/joepeilander" target="_blank" rel="noopener noreferrer">https://www.artstation.com/joepeilander</a></p>',
     gallery: [
       { src: 'images/Characters/Screenshot_2025-10-21_202456.webp', alt: 'Character lineup concept' },
       { src: 'images/Characters/Screenshot_2025-10-21_202831.webp', alt: 'Character portrait explorations' },
@@ -46,8 +44,6 @@ const detailData = {
   },
   about: {
     title: 'About me',
-    description:
-      '<p>I am a multidisciplinary artist who moves between painting, animation, and interactive work. Observing the world through light and color guides nearly every project I take on.</p><p>Whether it is developing story moments for games or painting atmospheric studies, my focus is on creating images that feel alive and encourage viewers to keep looking. Let&rsquo;s connect if you&rsquo;re interested in collaborating or have a project in mind.</p>',
     gallery: [],
   },
 };
@@ -168,14 +164,97 @@ const setupLightbox = () => {
   let zoomLevel = 1;
   const minZoom = 1;
   const maxZoom = 3;
+  let panX = 0;
+  let panY = 0;
+  let isDragging = false;
+  let dragPointerId = null;
+  let dragStartX = 0;
+  let dragStartY = 0;
+
+  const clampPan = () => {
+    const baseWidth = image.offsetWidth || 0;
+    const baseHeight = image.offsetHeight || 0;
+    const maxPanX = Math.max(0, ((baseWidth * zoomLevel) - baseWidth) / 2);
+    const maxPanY = Math.max(0, ((baseHeight * zoomLevel) - baseHeight) / 2);
+    panX = Math.min(Math.max(panX, -maxPanX), maxPanX);
+    panY = Math.min(Math.max(panY, -maxPanY), maxPanY);
+  };
+
+  const updateImageTransform = () => {
+    clampPan();
+    image.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+    image.classList.toggle('is-zoomed', zoomLevel > minZoom);
+  };
+
+  const stopDragging = (event) => {
+    if (!isDragging) {
+      return;
+    }
+
+    if (event && dragPointerId !== null && event.pointerId !== dragPointerId) {
+      return;
+    }
+
+    isDragging = false;
+    image.classList.remove('is-dragging');
+    if (
+      dragPointerId !== null &&
+      typeof image.releasePointerCapture === 'function' &&
+      typeof image.hasPointerCapture === 'function' &&
+      image.hasPointerCapture(dragPointerId)
+    ) {
+      image.releasePointerCapture(dragPointerId);
+    }
+    dragPointerId = null;
+  };
+
+  const startDragging = (event) => {
+    if (zoomLevel <= minZoom) {
+      return;
+    }
+
+    event.preventDefault();
+    isDragging = true;
+    dragPointerId = event.pointerId;
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+    image.classList.add('is-dragging');
+    if (typeof image.setPointerCapture === 'function') {
+      image.setPointerCapture(dragPointerId);
+    }
+  };
+
+  const handlePointerMove = (event) => {
+    if (!isDragging || event.pointerId !== dragPointerId) {
+      return;
+    }
+
+    event.preventDefault();
+    const deltaX = event.clientX - dragStartX;
+    const deltaY = event.clientY - dragStartY;
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+    panX += deltaX;
+    panY += deltaY;
+    updateImageTransform();
+  };
 
   const applyZoom = () => {
-    image.style.transform = `scale(${zoomLevel})`;
-    image.classList.toggle('is-zoomed', zoomLevel > 1);
+    if (zoomLevel <= minZoom && isDragging) {
+      stopDragging();
+    }
+
+    updateImageTransform();
   };
 
   const resetZoom = () => {
+    if (isDragging) {
+      stopDragging();
+    }
+
     zoomLevel = 1;
+    panX = 0;
+    panY = 0;
     applyZoom();
   };
 
@@ -251,6 +330,10 @@ const setupLightbox = () => {
   nextBtn.addEventListener('click', showNext);
   lightboxInner.addEventListener('wheel', handleWheelZoom, { passive: false });
   image.addEventListener('dblclick', resetZoom);
+  image.addEventListener('pointerdown', startDragging);
+  image.addEventListener('pointermove', handlePointerMove);
+  image.addEventListener('pointerup', stopDragging);
+  image.addEventListener('pointercancel', stopDragging);
 
   document.addEventListener('keydown', (event) => {
     if (!isOpen) {
