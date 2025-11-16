@@ -191,7 +191,7 @@ footer {
   background: transparent;
   color: inherit;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s;
 }
 
 .detail-item:focus-visible {
@@ -201,13 +201,18 @@ footer {
 
 .detail-item:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(59, 44, 26, 0.15);
 }
 
 .detail-item img {
   width: 100%;
   display: block;
   border-radius: 4px;
+  transition: filter 0.2s ease;
+}
+
+.detail-item:hover img,
+.detail-item:focus-visible img {
+  filter: drop-shadow(0 10px 20px rgba(59, 44, 26, 0.25));
 }
 
 .lightbox {

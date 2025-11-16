@@ -2,21 +2,21 @@ const detailData = {
   paintings: {
     title: 'Paintings',
     gallery: [
-      { src: 'images/Paintings/IMG20240121130029.webp', alt: 'Warm toned painting of a figure in a room' },
-      { src: 'images/Paintings/IMG20240121130143.webp', alt: 'Painting with dynamic lighting and architectural forms' },
-      { src: 'images/Paintings/IMG20240121132133.webp', alt: 'Landscape painting with vibrant colors' },
-      { src: 'images/Paintings/IMG20240121130152.webp', alt: 'Portrait painting study' },
-      { src: 'images/Paintings/IMG20240121130258.webp', alt: 'Painting of a figure amid abstract shapes' },
-      { src: 'images/Paintings/img20250925_16180935.webp', alt: 'Moody painting with deep reds and blues' },
-      { src: 'images/Paintings/img20250925_16201163.webp', alt: 'Painting experimenting with perspective' },
-      { src: 'images/Paintings/IMG20240121133044.webp', alt: 'Painting with cool light and architectural details' },
+      { src: 'images/Paintings/IMG20240121130029.webp' },
+      { src: 'images/Paintings/IMG20240121130143.webp' },
+      { src: 'images/Paintings/IMG20240121132133.webp' },
+      { src: 'images/Paintings/IMG20240121130152.webp' },
+      { src: 'images/Paintings/IMG20240121130258.webp' },
+      { src: 'images/Paintings/img20250925_16180935.webp' },
+      { src: 'images/Paintings/img20250925_16201163.webp' },
+      { src: 'images/Paintings/IMG20240121133044.webp' },
     ],
   },
   characters: {
     title: 'Characters',
     gallery: [
-      { src: 'images/Characters/Screenshot_2025-10-21_202456.webp', alt: 'Character lineup concept' },
-      { src: 'images/Characters/Screenshot_2025-10-21_202831.webp', alt: 'Character portrait explorations' },
+      { src: 'images/Characters/Screenshot_2025-10-21_202456.webp' },
+      { src: 'images/Characters/Screenshot_2025-10-21_202831.webp' },
     ],
   },
   animations: {
@@ -25,22 +25,22 @@ const detailData = {
       src: 'https://www.youtube.com/embed/BMqpDYKC6Ms',
       title: 'Moois Genoeg',
     },
-    gallery: [{ src: 'images/Games/media4.gif', alt: 'Looping hand-drawn animation sequence' }],
+    gallery: [{ src: 'images/Games/media4.gif' }],
   },
   games: {
     title: 'Games',
     gallery: [
-      { src: 'images/Games/Materials2.webp', alt: 'Stylized environment concept' },
-      { src: 'images/Games/Unnamed.webp', alt: 'Interface concept for a game' },
-      { src: 'images/Games/efwgeqq-1.webp', alt: 'Game concept art with characters' },
-      { src: 'images/Games/fefefeefe-0.webp', alt: 'Environment layout sketch' },
-      { src: 'images/Games/fefefeefefffeefwef-0.webp', alt: 'Game storyboard panel' },
-      { src: 'images/Games/media4.gif', alt: 'Animated gameplay loop' },
+      { src: 'images/Games/Materials2.webp' },
+      { src: 'images/Games/Unnamed.webp' },
+      { src: 'images/Games/efwgeqq-1.webp' },
+      { src: 'images/Games/fefefeefe-0.webp' },
+      { src: 'images/Games/fefefeefefffeefwef-0.webp' },
+      { src: 'images/Games/media4.gif' },
     ],
   },
   'other-works': {
     title: 'Other Works',
-    gallery: [{ src: 'images/Other%20Works/Uhs.webp', alt: 'Mixed media artwork' }],
+    gallery: [{ src: 'images/Other%20Works/Uhs.webp' }],
   },
   about: {
     title: 'About me',
@@ -163,7 +163,6 @@ const setupLightbox = () => {
   let isOpen = false;
   let zoomLevel = 1;
   const minZoom = 1;
-  const maxZoom = 3;
   let panX = 0;
   let panY = 0;
   let isDragging = false;
@@ -301,11 +300,21 @@ const setupLightbox = () => {
 
     event.preventDefault();
     const direction = event.deltaY < 0 ? 1 : -1;
-    const step = 0.15 * direction;
-    const newZoom = Math.max(minZoom, Math.min(maxZoom, zoomLevel + step));
-    if (newZoom !== zoomLevel) {
-      zoomLevel = Number(newZoom.toFixed(2));
+    const factor = direction > 0 ? 1.2 : 1 / 1.2;
+    const newZoom = Math.max(minZoom, zoomLevel * factor);
+    if (Math.abs(newZoom - zoomLevel) > 0.001) {
+      zoomLevel = newZoom;
       applyZoom();
+    }
+  };
+
+  const handleOuterClick = (event) => {
+    if (!isOpen) {
+      return;
+    }
+
+    if (event.target === lightbox || event.target === backdrop || event.target === lightboxInner) {
+      closeLightbox();
     }
   };
 
@@ -326,6 +335,8 @@ const setupLightbox = () => {
 
   closeBtn.addEventListener('click', closeLightbox);
   backdrop.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', handleOuterClick);
+  lightboxInner.addEventListener('click', handleOuterClick);
   prevBtn.addEventListener('click', showPrevious);
   nextBtn.addEventListener('click', showNext);
   lightboxInner.addEventListener('wheel', handleWheelZoom, { passive: false });
