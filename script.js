@@ -476,6 +476,7 @@ const setupLightbox = () => {
 const setupThumbnailPhysics = () => {
   const triggerButton = document.getElementById('gravity-toggle');
   const gallery = document.querySelector('.gallery');
+  const footer = document.querySelector('footer');
   if (!triggerButton || !gallery) {
     return;
   }
@@ -500,30 +501,150 @@ const setupThumbnailPhysics = () => {
     lastDragX: 0,
     lastDragY: 0,
     lastDragTime: 0,
+    active: false,
+    originalStyle: null,
   }));
 
   const stateByElement = new Map(states.map((state) => [state.el, state]));
-  const gravity = 2500;
-  const bounce = 0.55;
-  const airResistance = 0.994;
+  const gravity = 2600;
+  const bounce = 0.6;
+  const airResistance = 0.993;
   const groundFriction = 0.88;
   const maxVelocity = 2400;
+  const collisionDamping = 0.9;
+  const groundBuffer = 16;
   let physicsEnabled = false;
   let rafId = null;
   let lastFrameTime = null;
+  let scrollX = window.scrollX || window.pageXOffset || 0;
+  let scrollY = window.scrollY || window.pageYOffset || 0;
+  let savedGalleryMinHeight = null;
 
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
-  const updateElement = (state) => {
-    state.el.style.left = `${state.x}px`;
-    state.el.style.top = `${state.y}px`;
+  const refreshScrollPosition = () => {
+    scrollX = window.scrollX || window.pageXOffset || document.documentElement.scrollLeft || 0;
+    scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
   };
 
-  const applyBounds = (state) => {
-    const maxX = Math.max(0, window.innerWidth - state.width);
-    const maxY = Math.max(0, window.innerHeight - state.height);
-    state.x = clamp(state.x, 0, maxX);
-    state.y = clamp(state.y, 0, maxY);
+  const updateElement = (state) => {
+    if (!state.active) {
+      return;
+    }
+    const displayX = state.x - scrollX;
+    const displayY = state.y - scrollY;
+    state.el.style.transform = `translate3d(${displayX}px, ${displayY}px, 0)`;
+  };
+
+  const updateAllElements = () => {
+    states.forEach(updateElement);
+  };
+
+  const getWorldWidth = () =>
+    Math.max(
+      document.documentElement.clientWidth,
+      document.documentElement.scrollWidth,
+      document.body ? document.body.scrollWidth : 0,
+    );
+
+  const getWorldHeight = () =>
+    Math.max(
+      document.documentElement.clientHeight,
+      document.documentElement.scrollHeight,
+      document.body ? document.body.scrollHeight : 0,
+    );
+
+  const getGroundLimit = () => {
+    if (footer) {
+      const rect = footer.getBoundingClientRect();
+      return rect.top + scrollY - groundBuffer;
+    }
+    return getWorldHeight() - groundBuffer;
+  };
+
+  const enforceBounds = (state, worldWidth, groundLimit) => {
+    const limitX = Math.max(0, worldWidth - state.width);
+    const limitY = Math.max(0, groundLimit - state.height);
+
+    if (state.x <= 0) {
+      state.x = 0;
+      state.vx = Math.abs(state.vx) * bounce;
+    } else if (state.x >= limitX) {
+      state.x = limitX;
+      state.vx = -Math.abs(state.vx) * bounce;
+    }
+
+    if (state.y <= 0) {
+      state.y = 0;
+      state.vy = Math.abs(state.vy) * bounce;
+    } else if (state.y >= limitY) {
+      state.y = limitY;
+      state.vy = -Math.abs(state.vy) * bounce;
+      state.vx *= groundFriction;
+      if (Math.abs(state.vy) < 12) {
+        state.vy = 0;
+      }
+    }
+  };
+
+  const resolveCollisions = () => {
+    for (let i = 0; i < states.length; i += 1) {
+      const a = states[i];
+      if (!a.active || a.dragging) {
+        continue;
+      }
+      for (let j = i + 1; j < states.length; j += 1) {
+        const b = states[j];
+        if (!b.active || b.dragging) {
+          continue;
+        }
+
+        const overlapX = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
+        if (overlapX <= 0) {
+          continue;
+        }
+        const overlapY = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
+        if (overlapY <= 0) {
+          continue;
+        }
+
+        if (overlapX < overlapY) {
+          const shift = overlapX / 2 + 0.5;
+          if (a.x < b.x) {
+            a.x -= shift;
+            b.x += shift;
+          } else {
+            a.x += shift;
+            b.x -= shift;
+          }
+          const newVxA = b.vx * collisionDamping;
+          const newVxB = a.vx * collisionDamping;
+          a.vx = clamp(newVxA, -maxVelocity, maxVelocity);
+          b.vx = clamp(newVxB, -maxVelocity, maxVelocity);
+        } else {
+          const shift = overlapY / 2 + 0.5;
+          if (a.y < b.y) {
+            a.y -= shift;
+            b.y += shift;
+          } else {
+            a.y += shift;
+            b.y -= shift;
+          }
+          const newVyA = b.vy * collisionDamping;
+          const newVyB = a.vy * collisionDamping;
+          a.vy = clamp(newVyA, -maxVelocity, maxVelocity);
+          b.vy = clamp(newVyB, -maxVelocity, maxVelocity);
+        }
+      }
+    }
+  };
+
+  const stopLoop = () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    lastFrameTime = null;
   };
 
   const frame = (timestamp) => {
@@ -537,44 +658,31 @@ const setupThumbnailPhysics = () => {
 
     const delta = Math.min(0.032, (timestamp - lastFrameTime) / 1000);
     lastFrameTime = timestamp;
+    refreshScrollPosition();
 
-    const maxX = Math.max(0, window.innerWidth);
-    const maxY = Math.max(0, window.innerHeight);
+    const worldWidth = getWorldWidth();
+    const groundLimit = getGroundLimit();
 
     states.forEach((state) => {
-      if (state.dragging) {
+      if (!state.active || state.dragging) {
         return;
       }
 
       state.vy += gravity * delta;
       state.x += state.vx * delta;
       state.y += state.vy * delta;
+      enforceBounds(state, worldWidth, groundLimit);
+      state.vx = clamp(state.vx * airResistance, -maxVelocity, maxVelocity);
+      state.vy = clamp(state.vy * airResistance, -maxVelocity, maxVelocity);
+    });
 
-      const limitX = Math.max(0, maxX - state.width);
-      const limitY = Math.max(0, maxY - state.height);
+    resolveCollisions();
 
-      if (state.x <= 0) {
-        state.x = 0;
-        state.vx = Math.abs(state.vx) * bounce;
-      } else if (state.x >= limitX) {
-        state.x = limitX;
-        state.vx = -Math.abs(state.vx) * bounce;
+    states.forEach((state) => {
+      if (!state.active) {
+        return;
       }
-
-      if (state.y <= 0) {
-        state.y = 0;
-        state.vy = Math.abs(state.vy) * bounce;
-      } else if (state.y >= limitY) {
-        state.y = limitY;
-        state.vy = -Math.abs(state.vy) * bounce;
-        state.vx *= groundFriction;
-        if (Math.abs(state.vy) < 20) {
-          state.vy = 0;
-        }
-      }
-
-      state.vx *= airResistance;
-      state.vy *= airResistance;
+      enforceBounds(state, worldWidth, groundLimit);
       updateElement(state);
     });
 
@@ -594,19 +702,22 @@ const setupThumbnailPhysics = () => {
     }
 
     const state = stateByElement.get(event.currentTarget);
-    if (!state) {
+    if (!state || !state.active) {
       return;
     }
 
     event.preventDefault();
+    refreshScrollPosition();
+    const pointerWorldX = event.clientX + scrollX;
+    const pointerWorldY = event.clientY + scrollY;
     state.dragging = true;
     state.pointerId = event.pointerId;
-    state.dragOffsetX = event.clientX - state.x;
-    state.dragOffsetY = event.clientY - state.y;
+    state.dragOffsetX = pointerWorldX - state.x;
+    state.dragOffsetY = pointerWorldY - state.y;
     state.vx = 0;
     state.vy = 0;
-    state.lastDragX = event.clientX;
-    state.lastDragY = event.clientY;
+    state.lastDragX = pointerWorldX;
+    state.lastDragY = pointerWorldY;
     state.lastDragTime = performance.now();
     state.el.classList.add('is-dragging');
     if (typeof state.el.setPointerCapture === 'function') {
@@ -621,15 +732,19 @@ const setupThumbnailPhysics = () => {
     }
 
     event.preventDefault();
+    refreshScrollPosition();
+    const pointerWorldX = event.clientX + scrollX;
+    const pointerWorldY = event.clientY + scrollY;
     const now = performance.now();
     const delta = Math.max(0.001, (now - state.lastDragTime) / 1000);
-    state.x = event.clientX - state.dragOffsetX;
-    state.y = event.clientY - state.dragOffsetY;
-    applyBounds(state);
-    state.vx = clamp((event.clientX - state.lastDragX) / delta, -maxVelocity, maxVelocity);
-    state.vy = clamp((event.clientY - state.lastDragY) / delta, -maxVelocity, maxVelocity);
-    state.lastDragX = event.clientX;
-    state.lastDragY = event.clientY;
+    const worldWidth = getWorldWidth();
+    const groundLimit = getGroundLimit();
+    state.x = clamp(pointerWorldX - state.dragOffsetX, 0, Math.max(0, worldWidth - state.width));
+    state.y = clamp(pointerWorldY - state.dragOffsetY, 0, Math.max(0, groundLimit - state.height));
+    state.vx = clamp((pointerWorldX - state.lastDragX) / delta, -maxVelocity, maxVelocity);
+    state.vy = clamp((pointerWorldY - state.lastDragY) / delta, -maxVelocity, maxVelocity);
+    state.lastDragX = pointerWorldX;
+    state.lastDragY = pointerWorldY;
     state.lastDragTime = now;
     updateElement(state);
   };
@@ -656,10 +771,13 @@ const setupThumbnailPhysics = () => {
   };
 
   const handleResize = () => {
-    states.forEach((state) => {
-      applyBounds(state);
-      updateElement(state);
-    });
+    refreshScrollPosition();
+    updateAllElements();
+  };
+
+  const handleScroll = () => {
+    refreshScrollPosition();
+    updateAllElements();
   };
 
   const enablePhysics = () => {
@@ -668,20 +786,29 @@ const setupThumbnailPhysics = () => {
     }
 
     physicsEnabled = true;
+    refreshScrollPosition();
     triggerButton.classList.add('is-active');
-    triggerButton.textContent = 'Thumbnails unleashed!';
+    triggerButton.textContent = 'Reset the thumbnails';
     gallery.classList.add('is-floating');
+    savedGalleryMinHeight = gallery.style.minHeight || '';
+    const measuredHeight = gallery.offsetHeight;
+    gallery.style.minHeight = `${Math.max(measuredHeight, window.innerHeight * 0.8)}px`;
 
     states.forEach((state) => {
       const rect = state.el.getBoundingClientRect();
       state.width = rect.width;
       state.height = rect.height;
-      state.x = rect.left;
-      state.y = rect.top;
+      state.x = rect.left + scrollX;
+      state.y = rect.top + scrollY;
       state.vx = (Math.random() - 0.5) * 200;
-      state.vy = Math.random() * 150;
+      state.vy = Math.random() * 180;
+      state.dragging = false;
+      state.active = true;
+      state.originalStyle = state.el.getAttribute('style');
       state.el.style.position = 'fixed';
       state.el.style.margin = '0';
+      state.el.style.left = '0';
+      state.el.style.top = '0';
       state.el.style.width = `${state.width}px`;
       state.el.style.height = `${state.height}px`;
       state.el.style.zIndex = '30';
@@ -695,10 +822,58 @@ const setupThumbnailPhysics = () => {
     });
 
     window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     startLoop();
   };
 
-  triggerButton.addEventListener('click', enablePhysics);
+  const disablePhysics = () => {
+    if (!physicsEnabled) {
+      return;
+    }
+
+    physicsEnabled = false;
+    triggerButton.classList.remove('is-active');
+    triggerButton.textContent = 'Drop the thumbnails!';
+    gallery.classList.remove('is-floating');
+    if (savedGalleryMinHeight !== null) {
+      gallery.style.minHeight = savedGalleryMinHeight;
+      savedGalleryMinHeight = null;
+    }
+
+    stopLoop();
+    window.removeEventListener('resize', handleResize);
+    window.removeEventListener('scroll', handleScroll);
+
+    states.forEach((state) => {
+      if (!state.active) {
+        return;
+      }
+      state.active = false;
+      state.dragging = false;
+      state.pointerId = null;
+      state.el.classList.remove('card-floating', 'is-dragging');
+      state.el.removeEventListener('pointerdown', handlePointerDown);
+      state.el.removeEventListener('pointermove', handlePointerMove);
+      state.el.removeEventListener('pointerup', handlePointerUp);
+      state.el.removeEventListener('pointercancel', handlePointerUp);
+      state.el.removeEventListener('click', preventNavigation);
+      if (state.originalStyle) {
+        state.el.setAttribute('style', state.originalStyle);
+      } else {
+        state.el.removeAttribute('style');
+      }
+    });
+
+    refreshScrollPosition();
+  };
+
+  triggerButton.addEventListener('click', () => {
+    if (physicsEnabled) {
+      disablePhysics();
+    } else {
+      enablePhysics();
+    }
+  });
 };
 
 const init = () => {
