@@ -22,7 +22,7 @@ const detailData = {
   animations: {
     title: 'Animations',
     video: {
-      src: 'https://www.youtube.com/embed/BMqpDYKC6Ms?rel=0&controls=0&modestbranding=1',
+      src: 'https://www.youtube.com/embed/BMqpDYKC6Ms?rel=0&controls=1&modestbranding=1',
       title: 'Moois Genoeg',
     },
     gallery: [{ src: 'images/Animations/JellyFrog.gif' }],
