@@ -541,11 +541,10 @@ const setupThumbnailPhysics = () => {
   };
 
   const getWorldWidth = () =>
-    Math.max(
-      document.documentElement.clientWidth,
-      document.documentElement.scrollWidth,
-      document.body ? document.body.scrollWidth : 0,
-    );
+    window.innerWidth ||
+    document.documentElement.clientWidth ||
+    (document.body ? document.body.clientWidth : 0) ||
+    0;
 
   const getWorldHeight = () =>
     Math.max(
@@ -587,53 +586,59 @@ const setupThumbnailPhysics = () => {
     }
   };
 
+  const collisionIterations = 2;
+
   const resolveCollisions = () => {
-    for (let i = 0; i < states.length; i += 1) {
-      const a = states[i];
-      if (!a.active || a.dragging) {
-        continue;
-      }
-      for (let j = i + 1; j < states.length; j += 1) {
-        const b = states[j];
-        if (!b.active || b.dragging) {
+    for (let iteration = 0; iteration < collisionIterations; iteration += 1) {
+      for (let i = 0; i < states.length; i += 1) {
+        const a = states[i];
+        if (!a.active) {
           continue;
         }
-
-        const overlapX = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
-        if (overlapX <= 0) {
-          continue;
-        }
-        const overlapY = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
-        if (overlapY <= 0) {
-          continue;
-        }
-
-        if (overlapX < overlapY) {
-          const shift = overlapX / 2 + 0.5;
-          if (a.x < b.x) {
-            a.x -= shift;
-            b.x += shift;
-          } else {
-            a.x += shift;
-            b.x -= shift;
+        for (let j = i + 1; j < states.length; j += 1) {
+          const b = states[j];
+          if (!b.active) {
+            continue;
           }
-          const newVxA = b.vx * collisionDamping;
-          const newVxB = a.vx * collisionDamping;
-          a.vx = clamp(newVxA, -maxVelocity, maxVelocity);
-          b.vx = clamp(newVxB, -maxVelocity, maxVelocity);
-        } else {
-          const shift = overlapY / 2 + 0.5;
-          if (a.y < b.y) {
-            a.y -= shift;
-            b.y += shift;
-          } else {
-            a.y += shift;
-            b.y -= shift;
+
+          const overlapX = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
+          if (overlapX <= 0) {
+            continue;
           }
-          const newVyA = b.vy * collisionDamping;
-          const newVyB = a.vy * collisionDamping;
-          a.vy = clamp(newVyA, -maxVelocity, maxVelocity);
-          b.vy = clamp(newVyB, -maxVelocity, maxVelocity);
+          const overlapY = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
+          if (overlapY <= 0) {
+            continue;
+          }
+
+          const axis = overlapX < overlapY ? 'x' : 'y';
+          const overlap = (axis === 'x' ? overlapX : overlapY) + 0.5;
+          const direction = axis === 'x' ? (a.x < b.x ? -1 : 1) : (a.y < b.y ? -1 : 1);
+          const velProp = axis === 'x' ? 'vx' : 'vy';
+          const aMovable = !a.dragging;
+          const bMovable = !b.dragging;
+
+          if (!aMovable && !bMovable) {
+            continue;
+          }
+
+          if (aMovable && bMovable) {
+            const shift = overlap / 2;
+            a[axis] += direction * shift;
+            b[axis] -= direction * shift;
+            const newVelA = clamp(b[velProp] * collisionDamping, -maxVelocity, maxVelocity);
+            const newVelB = clamp(a[velProp] * collisionDamping, -maxVelocity, maxVelocity);
+            a[velProp] = newVelA;
+            b[velProp] = newVelB;
+          } else {
+            const movable = aMovable ? a : b;
+            const immovable = aMovable ? b : a;
+            const sign = movable === a ? direction : -direction;
+            movable[axis] += sign * overlap;
+            const impulse = immovable[velProp] * collisionDamping;
+            if (Number.isFinite(impulse)) {
+              movable[velProp] = clamp(impulse, -maxVelocity, maxVelocity);
+            }
+          }
         }
       }
     }
@@ -746,7 +751,14 @@ const setupThumbnailPhysics = () => {
     state.lastDragX = pointerWorldX;
     state.lastDragY = pointerWorldY;
     state.lastDragTime = now;
-    updateElement(state);
+    resolveCollisions();
+    states.forEach((otherState) => {
+      if (!otherState.active) {
+        return;
+      }
+      enforceBounds(otherState, worldWidth, groundLimit);
+      updateElement(otherState);
+    });
   };
 
   const handlePointerUp = (event) => {
@@ -787,6 +799,10 @@ const setupThumbnailPhysics = () => {
 
     physicsEnabled = true;
     refreshScrollPosition();
+    const layoutSnapshots = states.map((state) => ({
+      state,
+      rect: state.el.getBoundingClientRect(),
+    }));
     triggerButton.classList.add('is-active');
     triggerButton.textContent = 'Reset the thumbnails';
     gallery.classList.add('is-floating');
@@ -794,8 +810,7 @@ const setupThumbnailPhysics = () => {
     const measuredHeight = gallery.offsetHeight;
     gallery.style.minHeight = `${Math.max(measuredHeight, window.innerHeight * 0.8)}px`;
 
-    states.forEach((state) => {
-      const rect = state.el.getBoundingClientRect();
+    layoutSnapshots.forEach(({ state, rect }) => {
       state.width = rect.width;
       state.height = rect.height;
       state.x = rect.left + scrollX;
