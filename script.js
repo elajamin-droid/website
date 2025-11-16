@@ -302,8 +302,22 @@ const setupLightbox = () => {
     const direction = event.deltaY < 0 ? 1 : -1;
     const factor = direction > 0 ? 1.2 : 1 / 1.2;
     const newZoom = Math.max(minZoom, zoomLevel * factor);
+
     if (Math.abs(newZoom - zoomLevel) > 0.001) {
+      const prevZoom = zoomLevel;
       zoomLevel = newZoom;
+
+      const rect = image.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const offsetX = event.clientX - centerX;
+        const offsetY = event.clientY - centerY;
+        const zoomRatio = zoomLevel / prevZoom;
+        panX -= offsetX * (zoomRatio - 1);
+        panY -= offsetY * (zoomRatio - 1);
+      }
+
       applyZoom();
     }
   };
