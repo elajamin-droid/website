@@ -109,6 +109,19 @@ nav a:hover {
   margin-bottom: 10px;
 }
 
+.about-link {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 2px solid #b97a16;
+  padding-bottom: 4px;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+.about-link:hover {
+  color: #b97a16;
+  border-color: #ffb300;
+}
+
 .about p {
   font-size: 1em;
   line-height: 1.6;
@@ -175,7 +188,7 @@ footer {
   padding: 10px;
   border: none;
   border-radius: 6px;
-  background: #fff7e5;
+  background: #fff;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -194,6 +207,7 @@ footer {
   width: 100%;
   display: block;
   border-radius: 4px;
+  background-color: #fff;
 }
 
 .lightbox {
@@ -223,13 +237,31 @@ footer {
   align-items: center;
   justify-content: center;
   padding: 20px 60px;
+  overflow: hidden;
 }
 
 .lightbox-image {
   max-width: 100%;
-  max-height: 100%;
+  max-height: 80vh;
   border-radius: 6px;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  object-fit: contain;
+  transition: transform 0.2s ease;
+  cursor: zoom-in;
+}
+
+.lightbox-image.is-zoomed {
+  cursor: zoom-out;
+}
+
+.no-js-warning {
+  max-width: 960px;
+  margin: 20px auto;
+  padding: 15px 20px;
+  background: #fff7e5;
+  border-radius: 6px;
+  color: #b97a16;
+  text-align: left;
 }
 
 .lightbox-close {
