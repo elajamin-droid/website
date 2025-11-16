@@ -561,15 +561,21 @@ const setupThumbnailPhysics = () => {
     return getWorldHeight() - groundBuffer;
   };
 
+  const getHorizontalBounds = (worldWidth, cardWidth) => {
+    const minX = scrollX;
+    const maxX = scrollX + Math.max(0, worldWidth - cardWidth);
+    return { minX, maxX };
+  };
+
   const enforceBounds = (state, worldWidth, groundLimit) => {
-    const limitX = Math.max(0, worldWidth - state.width);
+    const { minX, maxX } = getHorizontalBounds(worldWidth, state.width);
     const limitY = Math.max(0, groundLimit - state.height);
 
-    if (state.x <= 0) {
-      state.x = 0;
+    if (state.x <= minX) {
+      state.x = minX;
       state.vx = Math.abs(state.vx) * bounce;
-    } else if (state.x >= limitX) {
-      state.x = limitX;
+    } else if (state.x >= maxX) {
+      state.x = maxX;
       state.vx = -Math.abs(state.vx) * bounce;
     }
 
@@ -744,7 +750,8 @@ const setupThumbnailPhysics = () => {
     const delta = Math.max(0.001, (now - state.lastDragTime) / 1000);
     const worldWidth = getWorldWidth();
     const groundLimit = getGroundLimit();
-    state.x = clamp(pointerWorldX - state.dragOffsetX, 0, Math.max(0, worldWidth - state.width));
+    const { minX, maxX } = getHorizontalBounds(worldWidth, state.width);
+    state.x = clamp(pointerWorldX - state.dragOffsetX, minX, maxX);
     state.y = clamp(pointerWorldY - state.dragOffsetY, 0, Math.max(0, groundLimit - state.height));
     state.vx = clamp((pointerWorldX - state.lastDragX) / delta, -maxVelocity, maxVelocity);
     state.vy = clamp((pointerWorldY - state.lastDragY) / delta, -maxVelocity, maxVelocity);
