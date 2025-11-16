@@ -314,8 +314,9 @@ const setupLightbox = () => {
         const offsetX = event.clientX - centerX;
         const offsetY = event.clientY - centerY;
         const zoomRatio = zoomLevel / prevZoom;
-        panX -= offsetX * (zoomRatio - 1);
-        panY -= offsetY * (zoomRatio - 1);
+        const adjust = 1 - zoomRatio;
+        panX += adjust * (offsetX - panX);
+        panY += adjust * (offsetY - panY);
       }
 
       applyZoom();
