@@ -60,6 +60,8 @@ nav a:hover {
   max-width: 900px;
   margin: 0 auto 60px;
   padding: 0 20px;
+  content-visibility: auto;
+  contain-intrinsic-size: 320px;
 }
 
 @media (max-width: 600px) {
@@ -70,13 +72,17 @@ nav a:hover {
 }
 
 .card {
-  display: block;
-  background: #fff7e5;
-  padding: 10px;
-  border-radius: 6px;
-  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-decoration: none;
   color: inherit;
+  gap: 10px;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+  transition: transform 0.2s ease;
+  will-change: transform;
 }
 
 .card:hover {
@@ -86,8 +92,10 @@ nav a:hover {
 .card img {
   width: 100%;
   aspect-ratio: 1 / 1;
-  border-radius: 4px;
+  border-radius: 10px;
   object-fit: cover;
+  display: block;
+  box-shadow: 0 10px 40px rgba(59, 44, 26, 0.08);
 }
 
 .card p {
@@ -96,6 +104,9 @@ nav a:hover {
   color: #3b2c1a;
   letter-spacing: 0.5px;
   text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.75);
+  padding: 4px 10px;
+  border-radius: 999px;
 }
 
 .about {
@@ -182,6 +193,8 @@ footer {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 18px;
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
 }
 
 .detail-item {
@@ -256,6 +269,7 @@ footer {
   object-fit: contain;
   transition: transform 0.2s ease;
   cursor: zoom-in;
+  will-change: transform;
 }
 
 .lightbox-image.is-zoomed {
@@ -323,6 +337,42 @@ footer {
   cursor: default;
 }
 
+.lightbox-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 6px 12px;
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+}
+
+.zoom-button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  color: #fff;
+  font-size: 0.95rem;
+  border-radius: 999px;
+  padding: 6px 12px;
+  cursor: pointer;
+  min-width: 44px;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.zoom-button:hover:not(:disabled),
+.zoom-button:focus-visible:not(:disabled) {
+  background: rgba(255, 255, 255, 0.2);
+  outline: none;
+}
+
+.zoom-button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .video-container {
   position: relative;
   width: 100%;
@@ -361,5 +411,21 @@ footer {
 
   .lightbox-inner {
     padding: 20px 40px;
+  }
+
+  .lightbox-controls {
+    bottom: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

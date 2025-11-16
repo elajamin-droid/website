@@ -146,6 +146,11 @@ const setupLightbox = () => {
       <button type="button" class="lightbox-close" aria-label="Close">&times;</button>
       <button type="button" class="lightbox-nav lightbox-prev" aria-label="Previous image">&#10094;</button>
       <img class="lightbox-image" alt="" />
+      <div class="lightbox-controls" aria-label="Zoom controls">
+        <button type="button" class="zoom-button zoom-out" aria-label="Zoom out">−</button>
+        <button type="button" class="zoom-button zoom-reset" aria-label="Reset zoom">1:1</button>
+        <button type="button" class="zoom-button zoom-in" aria-label="Zoom in">+</button>
+      </div>
       <button type="button" class="lightbox-nav lightbox-next" aria-label="Next image">&#10095;</button>
     </div>
   `;
@@ -158,11 +163,16 @@ const setupLightbox = () => {
   const nextBtn = lightbox.querySelector('.lightbox-next');
   const backdrop = lightbox.querySelector('.lightbox-backdrop');
   const lightboxInner = lightbox.querySelector('.lightbox-inner');
+  const zoomOutBtn = lightbox.querySelector('.zoom-out');
+  const zoomResetBtn = lightbox.querySelector('.zoom-reset');
+  const zoomInBtn = lightbox.querySelector('.zoom-in');
 
   let currentIndex = 0;
   let isOpen = false;
   let zoomLevel = 1;
   const minZoom = 1;
+  const maxZoom = 4;
+  const zoomMultiplier = 1.25;
   let panX = 0;
   let panY = 0;
   let isDragging = false;
@@ -183,6 +193,20 @@ const setupLightbox = () => {
     clampPan();
     image.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
     image.classList.toggle('is-zoomed', zoomLevel > minZoom);
+  };
+
+  const updateZoomButtons = () => {
+    const atMinZoom = zoomLevel <= minZoom + 0.01;
+    const atMaxZoom = zoomLevel >= maxZoom - 0.01;
+    if (zoomOutBtn) {
+      zoomOutBtn.disabled = atMinZoom;
+    }
+    if (zoomResetBtn) {
+      zoomResetBtn.disabled = atMinZoom;
+    }
+    if (zoomInBtn) {
+      zoomInBtn.disabled = atMaxZoom;
+    }
   };
 
   const stopDragging = (event) => {
@@ -244,6 +268,7 @@ const setupLightbox = () => {
     }
 
     updateImageTransform();
+    updateZoomButtons();
   };
 
   const resetZoom = () => {
@@ -251,10 +276,62 @@ const setupLightbox = () => {
       stopDragging();
     }
 
-    zoomLevel = 1;
+    zoomLevel = minZoom;
     panX = 0;
     panY = 0;
     applyZoom();
+  };
+
+  const getImageCenter = () => {
+    const rect = image.getBoundingClientRect();
+    if (!rect.width || !rect.height) {
+      return null;
+    }
+
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
+  };
+
+  const adjustPanForFocus = (originX, originY, previousZoom) => {
+    if (typeof originX !== 'number' || typeof originY !== 'number') {
+      return;
+    }
+
+    const rect = image.getBoundingClientRect();
+    if (!(rect.width > 0 && rect.height > 0)) {
+      return;
+    }
+
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const offsetX = originX - centerX;
+    const offsetY = originY - centerY;
+    const zoomRatio = zoomLevel / previousZoom;
+    const adjust = 1 - zoomRatio;
+    panX += adjust * (offsetX - panX);
+    panY += adjust * (offsetY - panY);
+  };
+
+  const setZoom = (targetZoom, originX, originY) => {
+    const previousZoom = zoomLevel;
+    const nextZoom = Math.min(maxZoom, Math.max(minZoom, targetZoom));
+    if (Math.abs(nextZoom - previousZoom) < 0.001) {
+      return;
+    }
+
+    zoomLevel = nextZoom;
+    adjustPanForFocus(originX, originY, previousZoom);
+    applyZoom();
+  };
+
+  const zoomIn = (originX, originY) => {
+    setZoom(zoomLevel * zoomMultiplier, originX, originY);
+  };
+
+  const zoomOut = (originX, originY) => {
+    setZoom(zoomLevel / zoomMultiplier, originX, originY);
   };
 
   const openLightbox = (index) => {
@@ -300,27 +377,21 @@ const setupLightbox = () => {
 
     event.preventDefault();
     const direction = event.deltaY < 0 ? 1 : -1;
-    const factor = direction > 0 ? 1.2 : 1 / 1.2;
-    const newZoom = Math.max(minZoom, zoomLevel * factor);
-
-    if (Math.abs(newZoom - zoomLevel) > 0.001) {
-      const prevZoom = zoomLevel;
-      zoomLevel = newZoom;
-
-      const rect = image.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        const offsetX = event.clientX - centerX;
-        const offsetY = event.clientY - centerY;
-        const zoomRatio = zoomLevel / prevZoom;
-        const adjust = 1 - zoomRatio;
-        panX += adjust * (offsetX - panX);
-        panY += adjust * (offsetY - panY);
-      }
-
-      applyZoom();
+    if (direction > 0) {
+      zoomIn(event.clientX, event.clientY);
+    } else {
+      zoomOut(event.clientX, event.clientY);
     }
+  };
+
+  const handleDoubleClick = (event) => {
+    event.preventDefault();
+    if (zoomLevel > minZoom + 0.05) {
+      resetZoom();
+      return;
+    }
+
+    setZoom(2, event.clientX, event.clientY);
   };
 
   const handleOuterClick = (event) => {
@@ -355,11 +426,30 @@ const setupLightbox = () => {
   prevBtn.addEventListener('click', showPrevious);
   nextBtn.addEventListener('click', showNext);
   lightboxInner.addEventListener('wheel', handleWheelZoom, { passive: false });
-  image.addEventListener('dblclick', resetZoom);
+  image.addEventListener('dblclick', handleDoubleClick);
   image.addEventListener('pointerdown', startDragging);
   image.addEventListener('pointermove', handlePointerMove);
   image.addEventListener('pointerup', stopDragging);
   image.addEventListener('pointercancel', stopDragging);
+
+  const handleZoomButton = (action) => {
+    const center = getImageCenter();
+    const originX = center ? center.x : undefined;
+    const originY = center ? center.y : undefined;
+    action(originX, originY);
+  };
+
+  if (zoomInBtn) {
+    zoomInBtn.addEventListener('click', () => handleZoomButton(zoomIn));
+  }
+
+  if (zoomOutBtn) {
+    zoomOutBtn.addEventListener('click', () => handleZoomButton(zoomOut));
+  }
+
+  if (zoomResetBtn) {
+    zoomResetBtn.addEventListener('click', resetZoom);
+  }
 
   document.addEventListener('keydown', (event) => {
     if (!isOpen) {
