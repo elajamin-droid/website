@@ -25,7 +25,7 @@ const detailData = {
       src: 'https://www.youtube.com/embed/BMqpDYKC6Ms',
       title: 'Moois Genoeg',
     },
-    gallery: [{ src: 'images/Games/media4.gif' }],
+    gallery: [{ src: 'images/Animations/JellyFrog.gif' }],
   },
   games: {
     title: 'Games',
@@ -40,7 +40,10 @@ const detailData = {
   },
   'other-works': {
     title: 'Other Works',
-    gallery: [{ src: 'images/Other%20Works/Uhs.webp' }],
+    gallery: [
+      { src: 'images/Other%20Works/Uhs.webp' },
+      { src: 'images/Other%20Works/grehtre.webp' },
+    ],
   },
   about: {
     title: 'About me',

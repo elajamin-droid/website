@@ -55,7 +55,8 @@ nav a:hover {
 
 .gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(220px, 260px));
+  justify-content: center;
   gap: 25px;
   max-width: 900px;
   margin: 0 auto 60px;
@@ -66,7 +67,7 @@ nav a:hover {
 
 @media (max-width: 600px) {
   .gallery {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 18px;
   }
 }
