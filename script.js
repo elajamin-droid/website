@@ -490,9 +490,435 @@ const setupLightbox = () => {
   });
 };
 
+const setupThumbnailPhysics = () => {
+  const triggerButton = document.getElementById('gravity-toggle');
+  const gallery = document.querySelector('.gallery');
+  const footer = document.querySelector('footer');
+  if (!triggerButton || !gallery) {
+    return;
+  }
+
+  const cards = Array.from(gallery.querySelectorAll('.card'));
+  if (!cards.length) {
+    return;
+  }
+
+  const states = cards.map((card) => ({
+    el: card,
+    width: 0,
+    height: 0,
+    x: 0,
+    y: 0,
+    vx: 0,
+    vy: 0,
+    dragging: false,
+    pointerId: null,
+    dragOffsetX: 0,
+    dragOffsetY: 0,
+    lastDragX: 0,
+    lastDragY: 0,
+    lastDragTime: 0,
+    active: false,
+    originalStyle: null,
+  }));
+
+  const stateByElement = new Map(states.map((state) => [state.el, state]));
+  const gravity = 2600;
+  const bounce = 0.6;
+  const airResistance = 0.993;
+  const groundFriction = 0.88;
+  const maxVelocity = 2400;
+  const collisionDamping = 0.9;
+  const groundBuffer = 16;
+  let physicsEnabled = false;
+  let rafId = null;
+  let lastFrameTime = null;
+  let scrollX = window.scrollX || window.pageXOffset || 0;
+  let scrollY = window.scrollY || window.pageYOffset || 0;
+  let savedGalleryMinHeight = null;
+
+  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+
+  const refreshScrollPosition = () => {
+    scrollX = window.scrollX || window.pageXOffset || document.documentElement.scrollLeft || 0;
+    scrollY = window.scrollY || window.pageYOffset || document.documentElement.scrollTop || 0;
+  };
+
+  const updateElement = (state) => {
+    if (!state.active) {
+      return;
+    }
+    const displayX = state.x - scrollX;
+    const displayY = state.y - scrollY;
+    state.el.style.transform = `translate3d(${displayX}px, ${displayY}px, 0)`;
+  };
+
+  const updateAllElements = () => {
+    states.forEach(updateElement);
+  };
+
+  const getWorldWidth = () =>
+    window.innerWidth ||
+    document.documentElement.clientWidth ||
+    (document.body ? document.body.clientWidth : 0) ||
+    0;
+
+  const getWorldHeight = () =>
+    Math.max(
+      document.documentElement.clientHeight,
+      document.documentElement.scrollHeight,
+      document.body ? document.body.scrollHeight : 0,
+    );
+
+  const getGroundLimit = () => {
+    if (footer) {
+      const rect = footer.getBoundingClientRect();
+      return rect.top + scrollY - groundBuffer;
+    }
+    return getWorldHeight() - groundBuffer;
+  };
+
+  const getHorizontalBounds = (worldWidth, cardWidth) => {
+    const minX = scrollX;
+    const maxX = scrollX + Math.max(0, worldWidth - cardWidth);
+    return { minX, maxX };
+  };
+
+  const enforceBounds = (state, worldWidth, groundLimit) => {
+    const { minX, maxX } = getHorizontalBounds(worldWidth, state.width);
+    const limitY = Math.max(0, groundLimit - state.height);
+
+    if (state.x <= minX) {
+      state.x = minX;
+      state.vx = Math.abs(state.vx) * bounce;
+    } else if (state.x >= maxX) {
+      state.x = maxX;
+      state.vx = -Math.abs(state.vx) * bounce;
+    }
+
+    if (state.y <= 0) {
+      state.y = 0;
+      state.vy = Math.abs(state.vy) * bounce;
+    } else if (state.y >= limitY) {
+      state.y = limitY;
+      state.vy = -Math.abs(state.vy) * bounce;
+      state.vx *= groundFriction;
+      if (Math.abs(state.vy) < 12) {
+        state.vy = 0;
+      }
+    }
+  };
+
+  const collisionIterations = 2;
+
+  const resolveCollisions = () => {
+    for (let iteration = 0; iteration < collisionIterations; iteration += 1) {
+      for (let i = 0; i < states.length; i += 1) {
+        const a = states[i];
+        if (!a.active) {
+          continue;
+        }
+        for (let j = i + 1; j < states.length; j += 1) {
+          const b = states[j];
+          if (!b.active) {
+            continue;
+          }
+
+          const overlapX = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
+          if (overlapX <= 0) {
+            continue;
+          }
+          const overlapY = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
+          if (overlapY <= 0) {
+            continue;
+          }
+
+          const axis = overlapX < overlapY ? 'x' : 'y';
+          const overlap = (axis === 'x' ? overlapX : overlapY) + 0.5;
+          const direction = axis === 'x' ? (a.x < b.x ? -1 : 1) : (a.y < b.y ? -1 : 1);
+          const velProp = axis === 'x' ? 'vx' : 'vy';
+          const aMovable = !a.dragging;
+          const bMovable = !b.dragging;
+
+          if (!aMovable && !bMovable) {
+            continue;
+          }
+
+          if (aMovable && bMovable) {
+            const shift = overlap / 2;
+            a[axis] += direction * shift;
+            b[axis] -= direction * shift;
+            const newVelA = clamp(b[velProp] * collisionDamping, -maxVelocity, maxVelocity);
+            const newVelB = clamp(a[velProp] * collisionDamping, -maxVelocity, maxVelocity);
+            a[velProp] = newVelA;
+            b[velProp] = newVelB;
+          } else {
+            const movable = aMovable ? a : b;
+            const immovable = aMovable ? b : a;
+            const sign = movable === a ? direction : -direction;
+            movable[axis] += sign * overlap;
+            const impulse = immovable[velProp] * collisionDamping;
+            if (Number.isFinite(impulse)) {
+              movable[velProp] = clamp(impulse, -maxVelocity, maxVelocity);
+            }
+          }
+        }
+      }
+    }
+  };
+
+  const stopLoop = () => {
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = null;
+    }
+    lastFrameTime = null;
+  };
+
+  const frame = (timestamp) => {
+    if (!physicsEnabled) {
+      return;
+    }
+
+    if (!lastFrameTime) {
+      lastFrameTime = timestamp;
+    }
+
+    const delta = Math.min(0.032, (timestamp - lastFrameTime) / 1000);
+    lastFrameTime = timestamp;
+    refreshScrollPosition();
+
+    const worldWidth = getWorldWidth();
+    const groundLimit = getGroundLimit();
+
+    states.forEach((state) => {
+      if (!state.active || state.dragging) {
+        return;
+      }
+
+      state.vy += gravity * delta;
+      state.x += state.vx * delta;
+      state.y += state.vy * delta;
+      enforceBounds(state, worldWidth, groundLimit);
+      state.vx = clamp(state.vx * airResistance, -maxVelocity, maxVelocity);
+      state.vy = clamp(state.vy * airResistance, -maxVelocity, maxVelocity);
+    });
+
+    resolveCollisions();
+
+    states.forEach((state) => {
+      if (!state.active) {
+        return;
+      }
+      enforceBounds(state, worldWidth, groundLimit);
+      updateElement(state);
+    });
+
+    rafId = requestAnimationFrame(frame);
+  };
+
+  const startLoop = () => {
+    if (rafId) {
+      return;
+    }
+    rafId = requestAnimationFrame(frame);
+  };
+
+  const handlePointerDown = (event) => {
+    if (!physicsEnabled) {
+      return;
+    }
+
+    const state = stateByElement.get(event.currentTarget);
+    if (!state || !state.active) {
+      return;
+    }
+
+    event.preventDefault();
+    refreshScrollPosition();
+    const pointerWorldX = event.clientX + scrollX;
+    const pointerWorldY = event.clientY + scrollY;
+    state.dragging = true;
+    state.pointerId = event.pointerId;
+    state.dragOffsetX = pointerWorldX - state.x;
+    state.dragOffsetY = pointerWorldY - state.y;
+    state.vx = 0;
+    state.vy = 0;
+    state.lastDragX = pointerWorldX;
+    state.lastDragY = pointerWorldY;
+    state.lastDragTime = performance.now();
+    state.el.classList.add('is-dragging');
+    if (typeof state.el.setPointerCapture === 'function') {
+      state.el.setPointerCapture(state.pointerId);
+    }
+  };
+
+  const handlePointerMove = (event) => {
+    const state = stateByElement.get(event.currentTarget);
+    if (!state || !state.dragging || event.pointerId !== state.pointerId) {
+      return;
+    }
+
+    event.preventDefault();
+    refreshScrollPosition();
+    const pointerWorldX = event.clientX + scrollX;
+    const pointerWorldY = event.clientY + scrollY;
+    const now = performance.now();
+    const delta = Math.max(0.001, (now - state.lastDragTime) / 1000);
+    const worldWidth = getWorldWidth();
+    const groundLimit = getGroundLimit();
+    const { minX, maxX } = getHorizontalBounds(worldWidth, state.width);
+    state.x = clamp(pointerWorldX - state.dragOffsetX, minX, maxX);
+    state.y = clamp(pointerWorldY - state.dragOffsetY, 0, Math.max(0, groundLimit - state.height));
+    state.vx = clamp((pointerWorldX - state.lastDragX) / delta, -maxVelocity, maxVelocity);
+    state.vy = clamp((pointerWorldY - state.lastDragY) / delta, -maxVelocity, maxVelocity);
+    state.lastDragX = pointerWorldX;
+    state.lastDragY = pointerWorldY;
+    state.lastDragTime = now;
+    resolveCollisions();
+    states.forEach((otherState) => {
+      if (!otherState.active) {
+        return;
+      }
+      enforceBounds(otherState, worldWidth, groundLimit);
+      updateElement(otherState);
+    });
+  };
+
+  const handlePointerUp = (event) => {
+    const state = stateByElement.get(event.currentTarget);
+    if (!state || !state.dragging || event.pointerId !== state.pointerId) {
+      return;
+    }
+
+    event.preventDefault();
+    state.dragging = false;
+    state.pointerId = null;
+    state.el.classList.remove('is-dragging');
+    if (typeof state.el.releasePointerCapture === 'function') {
+      state.el.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const preventNavigation = (event) => {
+    if (physicsEnabled) {
+      event.preventDefault();
+    }
+  };
+
+  const handleResize = () => {
+    refreshScrollPosition();
+    updateAllElements();
+  };
+
+  const handleScroll = () => {
+    refreshScrollPosition();
+    updateAllElements();
+  };
+
+  const enablePhysics = () => {
+    if (physicsEnabled) {
+      return;
+    }
+
+    physicsEnabled = true;
+    refreshScrollPosition();
+    const layoutSnapshots = states.map((state) => ({
+      state,
+      rect: state.el.getBoundingClientRect(),
+    }));
+    triggerButton.classList.add('is-active');
+    triggerButton.textContent = 'Reset the thumbnails';
+    gallery.classList.add('is-floating');
+    savedGalleryMinHeight = gallery.style.minHeight || '';
+    const measuredHeight = gallery.offsetHeight;
+    gallery.style.minHeight = `${Math.max(measuredHeight, window.innerHeight * 0.8)}px`;
+
+    layoutSnapshots.forEach(({ state, rect }) => {
+      state.width = rect.width;
+      state.height = rect.height;
+      state.x = rect.left + scrollX;
+      state.y = rect.top + scrollY;
+      state.vx = (Math.random() - 0.5) * 200;
+      state.vy = Math.random() * 180;
+      state.dragging = false;
+      state.active = true;
+      state.originalStyle = state.el.getAttribute('style');
+      state.el.style.position = 'fixed';
+      state.el.style.margin = '0';
+      state.el.style.left = '0';
+      state.el.style.top = '0';
+      state.el.style.width = `${state.width}px`;
+      state.el.style.height = `${state.height}px`;
+      state.el.style.zIndex = '30';
+      state.el.classList.add('card-floating');
+      state.el.addEventListener('pointerdown', handlePointerDown);
+      state.el.addEventListener('pointermove', handlePointerMove);
+      state.el.addEventListener('pointerup', handlePointerUp);
+      state.el.addEventListener('pointercancel', handlePointerUp);
+      state.el.addEventListener('click', preventNavigation);
+      updateElement(state);
+    });
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    startLoop();
+  };
+
+  const disablePhysics = () => {
+    if (!physicsEnabled) {
+      return;
+    }
+
+    physicsEnabled = false;
+    triggerButton.classList.remove('is-active');
+    triggerButton.textContent = 'Drop the thumbnails!';
+    gallery.classList.remove('is-floating');
+    if (savedGalleryMinHeight !== null) {
+      gallery.style.minHeight = savedGalleryMinHeight;
+      savedGalleryMinHeight = null;
+    }
+
+    stopLoop();
+    window.removeEventListener('resize', handleResize);
+    window.removeEventListener('scroll', handleScroll);
+
+    states.forEach((state) => {
+      if (!state.active) {
+        return;
+      }
+      state.active = false;
+      state.dragging = false;
+      state.pointerId = null;
+      state.el.classList.remove('card-floating', 'is-dragging');
+      state.el.removeEventListener('pointerdown', handlePointerDown);
+      state.el.removeEventListener('pointermove', handlePointerMove);
+      state.el.removeEventListener('pointerup', handlePointerUp);
+      state.el.removeEventListener('pointercancel', handlePointerUp);
+      state.el.removeEventListener('click', preventNavigation);
+      if (state.originalStyle) {
+        state.el.setAttribute('style', state.originalStyle);
+      } else {
+        state.el.removeAttribute('style');
+      }
+    });
+
+    refreshScrollPosition();
+  };
+
+  triggerButton.addEventListener('click', () => {
+    if (physicsEnabled) {
+      disablePhysics();
+    } else {
+      enablePhysics();
+    }
+  });
+};
+
 const init = () => {
   renderDetailPage();
   setupLightbox();
+  setupThumbnailPhysics();
 };
 
 document.addEventListener('DOMContentLoaded', init);

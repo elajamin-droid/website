@@ -66,6 +66,51 @@ nav a:hover {
   contain-intrinsic-size: 320px;
 }
 
+.playful-controls {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.gravity-button {
+  border: none;
+  background: #b97a16;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 12px 26px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.gravity-button:hover,
+.gravity-button:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+.gravity-button.is-active {
+  background: #3b2c1a;
+}
+
+.gallery.is-floating {
+  min-height: 70vh;
+  position: relative;
+}
+
+.card-floating {
+  cursor: grab;
+  transition: none !important;
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.35);
+}
+
+.card-floating.is-dragging {
+  cursor: grabbing;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+}
+
 @media (max-width: 600px) {
   .gallery {
     gap: 18px;
