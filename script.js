@@ -57,7 +57,7 @@ const detailData = {
           />
           <div class="about-copy">
             <p class="about-greeting">Hi!</p>
-            <p>My name is Nacef el Ajami, I’m a freelance 3D artist, painter and animator. If you’re making something cool, I’d love to help!</p>
+            <p>My name is Nacef el Ajami, I’m a freelance 3D artist, illustrator and animator. If you’re making something cool, or need something cool made, I’d love to help!</p>
 
             <p class="about-mail"><b>hey@nacef.nl</b></p>
           </div>
