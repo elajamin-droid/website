@@ -47,14 +47,21 @@ const detailData = {
   },
   about: {
     title: 'About me',
-    description:
-      "<p>Hi<br>My name is Nacef el Ajami, I’m a 3D artist, painter and animator freelancer. If you’re making something cool, I’d love to help!</p>",
-    gallery: [
-      {
-        src: 'images/About%20me/IMG20251117164816.jpg',
-        alt: 'Portrait of Nacef el Ajami',
-      },
-    ],
+    description: `
+      <div class="about-bio">
+        <img
+          class="about-portrait"
+          src="images/About%20me/IMG20251117164816.jpg"
+          alt="Portrait of Nacef el Ajami"
+          loading="lazy"
+        />
+        <div class="about-copy">
+          <p class="about-greeting">Hello</p>
+          <p>My name is Nacef el Ajami, I’m a 3D artist, painter and animator freelancer. If you’re making something cool, I’d love to help!</p>
+        </div>
+      </div>
+    `,
+    gallery: [],
   },
 };
 

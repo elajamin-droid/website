@@ -194,6 +194,32 @@ footer {
   line-height: 1.6;
 }
 
+.about-bio {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.about-portrait {
+  width: 160px;
+  max-width: 40%;
+  border-radius: 18px;
+  object-fit: cover;
+  box-shadow: 0 10px 24px rgba(59, 44, 26, 0.14);
+}
+
+.about-copy {
+  flex: 1 1 240px;
+}
+
+.about-greeting {
+  margin: 0 0 8px;
+  font-size: 2em;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
 .detail-gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
