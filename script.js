@@ -47,7 +47,14 @@ const detailData = {
   },
   about: {
     title: 'About me',
-    gallery: [],
+    description:
+      "<p>Hi<br>My name is Nacef el Ajami, I’m a 3D artist, painter and animator freelancer. If you’re making something cool, I’d love to help!</p>",
+    gallery: [
+      {
+        src: 'images/About%20me/IMG20251117164816.jpg',
+        alt: 'Portrait of Nacef el Ajami',
+      },
+    ],
   },
 };
 
