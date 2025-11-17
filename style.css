@@ -188,34 +188,54 @@ footer {
   text-align: left;
 }
 
+body[data-gallery="about"] header {
+  text-align: center;
+}
+
+body[data-gallery="about"] main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
 .detail-description {
-  margin-bottom: 30px;
+  margin: 0 auto 30px;
   font-size: 1em;
   line-height: 1.6;
+  max-width: 780px;
 }
 
 .about-bio {
   display: flex;
   align-items: center;
-  gap: 20px;
+  justify-content: center;
+  gap: 24px;
   flex-wrap: wrap;
 }
 
 .about-portrait {
-  width: 160px;
-  max-width: 40%;
-  border-radius: 18px;
+  width: clamp(200px, 28vw, 260px);
+  max-width: 44%;
+  border-radius: 22px;
   object-fit: cover;
   box-shadow: 0 10px 24px rgba(59, 44, 26, 0.14);
 }
 
 .about-copy {
-  flex: 1 1 240px;
+  flex: 1 1 260px;
+  max-width: 520px;
+  text-align: center;
+}
+
+.about-copy p {
+  margin: 0;
+  text-align: center;
 }
 
 .about-greeting {
-  margin: 0 0 8px;
-  font-size: 2em;
+  margin: 0 0 10px;
+  font-size: 2.1em;
   font-weight: 800;
   letter-spacing: 0.5px;
 }
