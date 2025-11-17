@@ -122,9 +122,10 @@ nav a:hover {
 
 .about-wrapper {
   display: flex;
-  justify-content: center;    /* horizontally center */
-  align-items: center;         /* vertically center */
-  height: 100vh;               /* fill screen height */
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  padding: 20px;
 }
 
 .about h2 {
@@ -163,6 +164,8 @@ footer {
 /* Detail pages */
 .detail-page {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .detail-page header {
@@ -193,6 +196,8 @@ footer {
   margin: 0 auto;
   padding: 0 20px 60px;
   text-align: left;
+  width: 100%;
+  flex: 1 0 auto;
 }
 
 body[data-gallery="about"] header {
@@ -202,6 +207,7 @@ body[data-gallery="about"] header {
 body[data-gallery="about"] main {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
   text-align: center;
 }
