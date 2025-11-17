@@ -120,6 +120,13 @@ nav a:hover {
   padding: 0 20px;
 }
 
+.about-wrapper {
+  display: flex;
+  justify-content: center;    /* horizontally center */
+  align-items: center;         /* vertically center */
+  height: 100vh;               /* fill screen height */
+}
+
 .about h2 {
   font-size: 1.6em;
   margin-bottom: 10px;
@@ -225,12 +232,12 @@ body[data-gallery="about"] main {
 .about-copy {
   flex: 1 1 260px;
   max-width: 520px;
-  text-align: center;
+  text-align: left;
 }
 
 .about-copy p {
   margin: 0;
-  text-align: center;
+  text-align: left;
 }
 
 .about-greeting {
@@ -238,6 +245,16 @@ body[data-gallery="about"] main {
   font-size: 2.1em;
   font-weight: 800;
   letter-spacing: 0.5px;
+}
+
+.about-mail {
+  margin: 0 0 10px;
+  font-size: 1.5em;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #b97a16;
+  display: inline-block;
+
 }
 
 .detail-gallery {

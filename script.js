@@ -46,23 +46,26 @@ const detailData = {
     ],
   },
   about: {
-    title: 'About me',
     description: `
-      <div class="about-bio">
-        <img
-          class="about-portrait"
-          src="images/About%20me/IMG20251117164816.jpg"
-          alt="Portrait of Nacef el Ajami"
-          loading="lazy"
-        />
-        <div class="about-copy">
-          <p class="about-greeting">Hello</p>
-          <p>My name is Nacef el Ajami, I’m a 3D artist, painter and animator freelancer. If you’re making something cool, I’d love to help!</p>
+      <div class="about-wrapper">
+        <div class="about-bio">
+          <img
+            class="about-portrait"
+            src="images/About%20me/IMG20251117164816.webp"
+            alt="Portrait of Nacef el Ajami"
+            loading="lazy"
+          />
+          <div class="about-copy">
+            <p class="about-greeting">Hi!</p>
+            <p>My name is Nacef el Ajami, I’m a freelance 3D artist, painter and animator. If you’re making something cool, I’d love to help!</p>
+
+            <p class="about-mail"><b>hey@nacef.nl</b></p>
+          </div>
         </div>
       </div>
     `,
     gallery: [],
-  },
+  }
 };
 
 const renderDetailPage = () => {
