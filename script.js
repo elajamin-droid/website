@@ -68,10 +68,21 @@ const detailData = {
   }
 };
 
-let hoverSoundSource = null;
+let hoverSounds = [];
+let hoverSoundsInitialized = false;
 let isHoverSoundMuted = true;
 const AUDIO_FOLDER = 'Audio';
 const AUDIO_EXTENSIONS = ['mp3', 'ogg', 'wav', 'm4a'];
+
+const shuffleArray = (items) => {
+  const array = [...items];
+  for (let i = array.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+
+  return array;
+};
 
 const normalizeAudioPath = (href) => {
   if (!href) return null;
@@ -156,25 +167,21 @@ const discoverHoverSounds = async () => {
   return ['Sounds/Woep.ogg'];
 };
 
-const pickHoverSound = async () => {
-  if (hoverSoundSource) return hoverSoundSource;
+const prepareHoverSounds = async () => {
+  if (hoverSoundsInitialized) return hoverSounds;
 
+  hoverSoundsInitialized = true;
   const sounds = await discoverHoverSounds();
-  if (!sounds.length) return null;
-
-  const choice = sounds[Math.floor(Math.random() * sounds.length)];
-  hoverSoundSource = choice;
-  return choice;
+  hoverSounds = shuffleArray(sounds);
+  return hoverSounds;
 };
 
-const playHoverSound = async () => {
-  if (isHoverSoundMuted) return;
-
-  const source = await pickHoverSound();
-  if (!source) return;
+const playHoverSound = (source) => {
+  if (isHoverSoundMuted || !source) return;
 
   const audio = new Audio(source);
   audio.volume = 0.6;
+  audio.playbackRate = 0.9 + Math.random() * 0.3;
   audio.play().catch(() => {});
 };
 
@@ -634,27 +641,30 @@ const setupLightbox = () => {
   });
 };
 
-const setupThumbnailTones = () => {
+const setupThumbnailTones = async () => {
   const cards = Array.from(document.querySelectorAll('.gallery .card'));
   if (!cards.length) return;
 
-  pickHoverSound();
+  const sounds = await prepareHoverSounds();
+  if (!sounds.length) return;
 
-  const trigger = () => {
-    playHoverSound();
-  };
+  const startIndex = Math.floor(Math.random() * sounds.length);
 
-  cards.forEach((card) => {
+  cards.forEach((card, index) => {
+    const sound = sounds[(startIndex + index) % sounds.length];
+    const trigger = () => playHoverSound(sound);
     card.addEventListener('mouseenter', trigger);
     card.addEventListener('focus', trigger);
   });
 };
 
-const init = () => {
+const init = async () => {
   renderDetailPage();
   setupLightbox();
   setupAudioToggle();
-  setupThumbnailTones();
+  await setupThumbnailTones();
 };
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+});
