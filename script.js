@@ -68,23 +68,114 @@ const detailData = {
   }
 };
 
-let hoverAudioContext;
-let hoverMasterGain;
+let hoverSoundSource = null;
 let isHoverSoundMuted = true;
-const HOVER_ROOT_NOTES = [130.81, 146.83, 164.81, 196.0, 220.0];
-const MAX_HOVER_VOICES = 8;
+const AUDIO_FOLDER = 'Audio';
+const AUDIO_EXTENSIONS = ['mp3', 'ogg', 'wav', 'm4a'];
 
-const ensureHoverAudio = () => {
-  if (!hoverAudioContext) {
-    hoverAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-    hoverMasterGain = hoverAudioContext.createGain();
-    hoverMasterGain.gain.value = isHoverSoundMuted ? 0 : 0.9;
-    hoverMasterGain.connect(hoverAudioContext.destination);
+const normalizeAudioPath = (href) => {
+  if (!href) return null;
+
+  try {
+    if (/^[a-zA-Z][a-zA-Z\d+\-.]*:/.test(href)) {
+      const url = new URL(href);
+      return url.pathname.replace(/^\//, '');
+    }
+  } catch (error) {
+    return null;
   }
 
-  if (hoverAudioContext.state === 'suspended') {
-    hoverAudioContext.resume();
+  if (href.startsWith('/')) {
+    return href.replace(/^\//, '');
   }
+
+  return `${AUDIO_FOLDER}/${href.replace(/^\.\//, '')}`;
+};
+
+const fetchAudioManifest = async () => {
+  const manifestCandidates = [`${AUDIO_FOLDER}/sounds.json`, `${AUDIO_FOLDER}/manifest.json`];
+
+  for (const manifestPath of manifestCandidates) {
+    try {
+      const response = await fetch(manifestPath);
+      if (!response.ok) {
+        continue;
+      }
+
+      const data = await response.json();
+      const files = Array.isArray(data) ? data : Array.isArray(data?.files) ? data.files : [];
+      const normalized = files
+        .map(normalizeAudioPath)
+        .filter((file) => file && AUDIO_EXTENSIONS.some((ext) => file.toLowerCase().endsWith(ext)));
+
+      if (normalized.length) {
+        return normalized;
+      }
+    } catch (error) {
+      // If manifest isn't available or invalid, continue to the next strategy.
+    }
+  }
+
+  return [];
+};
+
+const scrapeAudioDirectory = async () => {
+  try {
+    const response = await fetch(`${AUDIO_FOLDER}/`);
+    if (!response.ok) return [];
+
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('text/html')) return [];
+
+    const html = await response.text();
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    const links = Array.from(doc.querySelectorAll('a'));
+
+    const files = links
+      .map((link) => normalizeAudioPath(link.getAttribute('href')))
+      .filter((href) => href && AUDIO_EXTENSIONS.some((ext) => href.toLowerCase().endsWith(ext)));
+
+    return Array.from(new Set(files));
+  } catch (error) {
+    return [];
+  }
+};
+
+const discoverHoverSounds = async () => {
+  const manifestFiles = await fetchAudioManifest();
+  if (manifestFiles.length) {
+    return manifestFiles;
+  }
+
+  const scrapedFiles = await scrapeAudioDirectory();
+  if (scrapedFiles.length) {
+    return scrapedFiles;
+  }
+
+  return ['Sounds/Woep.ogg'];
+};
+
+const pickHoverSound = async () => {
+  if (hoverSoundSource) return hoverSoundSource;
+
+  const sounds = await discoverHoverSounds();
+  if (!sounds.length) return null;
+
+  const choice = sounds[Math.floor(Math.random() * sounds.length)];
+  hoverSoundSource = choice;
+  return choice;
+};
+
+const playHoverSound = async () => {
+  if (isHoverSoundMuted) return;
+
+  const source = await pickHoverSound();
+  if (!source) return;
+
+  const audio = new Audio(source);
+  audio.volume = 0.6;
+  audio.play().catch(() => {});
 };
 
 const updateAudioToggleButton = () => {
@@ -104,9 +195,6 @@ const updateAudioToggleButton = () => {
 
 const setHoverSoundMuted = (muted) => {
   isHoverSoundMuted = muted;
-  if (hoverMasterGain) {
-    hoverMasterGain.gain.value = muted ? 0 : 0.9;
-  }
   updateAudioToggleButton();
 };
 
@@ -117,7 +205,6 @@ const setupAudioToggle = () => {
   updateAudioToggleButton();
   toggle.addEventListener('click', () => {
     if (isHoverSoundMuted) {
-      ensureHoverAudio();
       setHoverSoundMuted(false);
     } else {
       setHoverSoundMuted(true);
@@ -551,74 +638,15 @@ const setupThumbnailTones = () => {
   const cards = Array.from(document.querySelectorAll('.gallery .card'));
   if (!cards.length) return;
 
-  const activeVoices = new Set();
+  pickHoverSound();
 
-  const playChord = (rootFreq) => {
-    if (isHoverSoundMuted) return;
-
-    ensureHoverAudio();
-
-    // Chord tones (root + perfect fifth + nice mellow ninth)
-    const freqs = [
-      rootFreq,
-      rootFreq * 1.5,        // perfect 5th
-      rootFreq * 1.12246     // major 9th (beautifully airy)
-    ];
-
-    const now = hoverAudioContext.currentTime;
-    const voiceGroup = [];
-
-    // Kill old voices if too many
-    if (activeVoices.size > MAX_HOVER_VOICES) {
-      const oldest = activeVoices.values().next().value;
-      oldest.stop();
-      activeVoices.delete(oldest);
-    }
-
-    freqs.forEach((freq, i) => {
-      const osc = hoverAudioContext.createOscillator();
-      const g = hoverAudioContext.createGain();
-
-      // Slight wave variation per voice
-      osc.type = i === 0 ? "triangle" : "sine";
-
-      // Add subtle random pitch bend target
-      const bend = freq * (1 + (Math.random() * 0.02 - 0.01)); // ±1%
-
-      // Start slightly detuned, glide into pitch
-      osc.frequency.setValueAtTime(freq * 0.98, now);
-      osc.frequency.exponentialRampToValueAtTime(bend, now + 0.12);
-
-      // Envelope: quick but smooth
-      g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(0.18 / (i + 1), now + 0.05); // softer on upper notes
-      g.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-
-      osc.connect(g);
-      g.connect(hoverMasterGain);
-
-      osc.start(now);
-      osc.stop(now + 0.55);
-
-      // Track voices to stop overlap clipping
-      osc.onended = () => {
-        activeVoices.delete(osc);
-      };
-
-      activeVoices.add(osc);
-      voiceGroup.push(osc);
-    });
-
-    return voiceGroup;
+  const trigger = () => {
+    playHoverSound();
   };
 
-  // Attach event listeners
-  cards.forEach((card, index) => {
-    const base = HOVER_ROOT_NOTES[index % HOVER_ROOT_NOTES.length];
-    const trigger = () => playChord(base);
-
-    card.addEventListener("mouseenter", trigger);
-    card.addEventListener("focus", trigger);
+  cards.forEach((card) => {
+    card.addEventListener('mouseenter', trigger);
+    card.addEventListener('focus', trigger);
   });
 };
 
