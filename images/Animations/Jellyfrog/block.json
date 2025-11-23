@@ -1,0 +1,11 @@
+{
+  "title": "Jelly Frog",
+  "thumb": "images/Animations/Thumbnail.png",
+  "description": "A playful jellyfish-inspired frog loop animated with a soft watercolor look.",
+  "gallery": [
+    {
+      "src": "images/Animations/JellyFrog.gif",
+      "alt": "Jelly frog swimming animation"
+    }
+  ]
+}

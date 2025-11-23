@@ -1,70 +1,119 @@
+const blockConfigSources = {
+  animations: [
+    'images/Animations/Jellyfrog/block.json',
+    'images/Animations/Mooisgenoeg/block.json',
+  ],
+};
+
 const detailData = {
   paintings: {
     title: 'Paintings',
-    gallery: [
-      { src: 'images/Paintings/IMG20240121130029.webp' },
-      { src: 'images/Paintings/IMG20240121130143.webp' },
-      { src: 'images/Paintings/IMG20240121132133.webp' },
-      { src: 'images/Paintings/IMG20240121130152.webp' },
-      { src: 'images/Paintings/IMG20240121130258.webp' },
-      { src: 'images/Paintings/img20250925_16180935.webp' },
-      { src: 'images/Paintings/img20250925_16201163.webp' },
-      { src: 'images/Paintings/IMG20240121133044.webp' },
+    blocks: [
+      {
+        title: 'Paintings',
+        gallery: [
+          { src: 'images/Paintings/IMG20240121130029.webp' },
+          { src: 'images/Paintings/IMG20240121130143.webp' },
+          { src: 'images/Paintings/IMG20240121132133.webp' },
+          { src: 'images/Paintings/IMG20240121130152.webp' },
+          { src: 'images/Paintings/IMG20240121130258.webp' },
+          { src: 'images/Paintings/img20250925_16180935.webp' },
+          { src: 'images/Paintings/img20250925_16201163.webp' },
+          { src: 'images/Paintings/IMG20240121133044.webp' },
+        ],
+      },
     ],
   },
   characters: {
     title: 'Characters',
-    gallery: [
-      { src: 'images/Characters/Screenshot_2025-10-21_202456.webp' },
-      { src: 'images/Characters/Screenshot_2025-10-21_202831.webp' },
+    blocks: [
+      {
+        title: 'Characters',
+        gallery: [
+          { src: 'images/Characters/Screenshot_2025-10-21_202456.webp' },
+          { src: 'images/Characters/Screenshot_2025-10-21_202831.webp' },
+        ],
+      },
     ],
   },
   animations: {
     title: 'Animations',
-    video: {
-      src: 'https://www.youtube.com/embed/BMqpDYKC6Ms?rel=0&controls=1&modestbranding=1',
-      title: 'Moois Genoeg',
-    },
-    gallery: [{ src: 'images/Animations/JellyFrog.gif' }],
+    blocks: [
+      {
+        title: 'Jelly Frog',
+        thumb: 'images/Animations/Thumbnail.png',
+        description: 'A playful jellyfish-inspired frog loop animated with a soft watercolor look.',
+        gallery: [
+          {
+            src: 'images/Animations/JellyFrog.gif',
+            alt: 'Jelly frog swimming animation',
+          },
+        ],
+      },
+      {
+        title: 'Moois Genoeg',
+        thumb: 'images/Animations/Thumbnail.png',
+        description: 'Short film direction and animation. Sound on for the full vibe.',
+        gallery: [],
+        embed: 'https://www.youtube.com/embed/BMqpDYKC6Ms?rel=0&controls=1&modestbranding=1',
+      },
+    ],
   },
   games: {
     title: 'Games',
-    gallery: [
-      { src: 'images/Games/Materials2.webp' },
-      { src: 'images/Games/Unnamed.webp' },
-      { src: 'images/Games/efwgeqq-1.webp' },
-      { src: 'images/Games/fefefeefe-0.webp' },
-      { src: 'images/Games/fefefeefefffeefwef-0.webp' },
-      { src: 'images/Games/media4.gif' },
+    blocks: [
+      {
+        title: 'Games',
+        gallery: [
+          { src: 'images/Games/Materials2.webp' },
+          { src: 'images/Games/Unnamed.webp' },
+          { src: 'images/Games/efwgeqq-1.webp' },
+          { src: 'images/Games/fefefeefe-0.webp' },
+          { src: 'images/Games/fefefeefefffeefwef-0.webp' },
+          { src: 'images/Games/media4.gif' },
+        ],
+      },
     ],
   },
   'other-works': {
     title: 'Other Works',
-    gallery: [
-      { src: 'images/Other%20Works/Uhs.webp' },
-      { src: 'images/Other%20Works/grehtre.webp' },
+    blocks: [
+      {
+        title: 'Other Works',
+        gallery: [
+          { src: 'images/Other%20Works/Uhs.webp' },
+          { src: 'images/Other%20Works/grehtre.webp' },
+        ],
+      },
     ],
   },
   about: {
-    description: `
-      <div class="about-wrapper">
-        <div class="about-bio">
-          <img
-            class="about-portrait"
-            src="images/About%20me/IMG20251117164816.webp"
-            alt="Portrait of Nacef el Ajami"
-            loading="lazy"
-          />
-          <div class="about-copy">
-            <p class="about-greeting">Hi!</p>
-            <p>My name is Nacef el Ajami, I’m a freelance 3D artist, illustrator and animator. If you’re making something cool, or need something cool made, I’d love to help!</p>
+    title: 'About me',
+    blocks: [
+      {
+        title: 'About me',
+        description: `
+          <div class="about-wrapper">
+            <div class="about-bio">
+              <img
+                class="about-portrait"
+                src="images/About%20me/IMG20251117164816.webp"
+                alt="Portrait of Nacef el Ajami"
+                loading="lazy"
+              />
+              <div class="about-copy">
+                <p class="about-greeting">Hi!</p>
+                <p>My name is Nacef el Ajami, I’m a freelance 3D artist, illustrator and animator. If you’re making something cool,
+    or need something cool made, I’d love to help!</p>
 
-            <p class="about-mail"><b>hey@nacef.nl</b></p>
+                <p class="about-mail"><b>hey@nacef.nl</b></p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    `,
-    gallery: [],
+        `,
+        gallery: [],
+      },
+    ],
   }
 };
 
@@ -125,7 +174,139 @@ const setupAudioToggle = () => {
   });
 };
 
-const renderDetailPage = () => {
+const createGallerySection = (items = []) => {
+  const gallerySection = document.createElement('section');
+  gallerySection.className = 'detail-gallery';
+
+  items.forEach((item) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'detail-item';
+    const fullImage = item.full || item.src;
+    button.dataset.full = fullImage;
+    if (item.alt) {
+      button.dataset.alt = item.alt;
+    }
+
+    const image = document.createElement('img');
+    image.src = item.thumb || item.src;
+    image.alt = item.alt || '';
+    image.loading = 'lazy';
+    button.appendChild(image);
+    gallerySection.appendChild(button);
+  });
+
+  return gallerySection;
+};
+
+const createDetailBlock = (block) => {
+  const wrapper = document.createElement('article');
+  wrapper.className = 'detail-block';
+
+  const summary = document.createElement('div');
+  summary.className = 'detail-block__summary';
+
+  if (block.thumb) {
+    const thumb = document.createElement('div');
+    thumb.className = 'detail-block__thumb';
+    const image = document.createElement('img');
+    image.src = block.thumb;
+    image.alt = block.thumbAlt || `${block.title || 'Gallery item'} thumbnail`;
+    image.loading = 'lazy';
+    thumb.appendChild(image);
+    summary.appendChild(thumb);
+  }
+
+  const copy = document.createElement('div');
+  copy.className = 'detail-block__copy';
+
+  if (block.title) {
+    const heading = document.createElement('h2');
+    heading.textContent = block.title;
+    copy.appendChild(heading);
+  }
+
+  if (block.description) {
+    const description = document.createElement('div');
+    description.className = 'detail-description';
+    description.innerHTML = block.description;
+    copy.appendChild(description);
+  }
+
+  summary.appendChild(copy);
+  wrapper.appendChild(summary);
+
+  if (block.embed) {
+    const videoContainer = document.createElement('div');
+    videoContainer.className = 'video-container';
+    const iframe = document.createElement('iframe');
+    iframe.src = block.embed;
+    iframe.title = block.title || 'Embedded media';
+    iframe.loading = 'lazy';
+    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+    iframe.allowFullscreen = true;
+    videoContainer.appendChild(iframe);
+    wrapper.appendChild(videoContainer);
+  }
+
+  if (Array.isArray(block.gallery) && block.gallery.length) {
+    wrapper.appendChild(createGallerySection(block.gallery));
+  }
+
+  return wrapper;
+};
+
+const loadBlockConfigs = async (pageKey) => {
+  const sources = blockConfigSources[pageKey];
+  if (!Array.isArray(sources) || !sources.length) {
+    return [];
+  }
+
+  const configs = await Promise.all(
+    sources.map(async (src) => {
+      try {
+        const response = await fetch(src);
+        if (!response.ok) {
+          console.error(`Failed to fetch block config at ${src}`);
+          return null;
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.error('Failed to load block config', src, error);
+        return null;
+      }
+    }),
+  );
+
+  return configs.filter(Boolean);
+};
+
+const getInlineBlocks = (detail) => {
+  if (!detail) {
+    return [];
+  }
+
+  if (Array.isArray(detail.blocks)) {
+    return detail.blocks.map((block) => ({ ...block }));
+  }
+
+  if (detail.description || (Array.isArray(detail.gallery) && detail.gallery.length)) {
+    const fallback = {
+      title: detail.title,
+      description: detail.description,
+      gallery: detail.gallery || [],
+      embed: detail.video?.src,
+    };
+
+    return [fallback];
+  }
+
+  return [];
+};
+
+const renderDetailPage = async () => {
   const pageKey = document.body.dataset.gallery;
   const detailRoot = document.getElementById('detail-root');
   if (!pageKey || !detailRoot) {
@@ -156,51 +337,31 @@ const renderDetailPage = () => {
   detailRoot.appendChild(header);
 
   const main = document.createElement('main');
+  const inlineBlocks = getInlineBlocks(detail);
+  const externalBlocks = await loadBlockConfigs(pageKey);
+  const mergedBlocks = new Map();
 
-  if (detail.description) {
-    const descriptionSection = document.createElement('section');
-    descriptionSection.className = 'detail-description';
-    descriptionSection.innerHTML = detail.description;
-    main.appendChild(descriptionSection);
-  }
+  inlineBlocks.forEach((block, index) => {
+    const key = block.title || block.thumb || block.embed || block.gallery?.[0]?.src || `inline-${index}`;
+    mergedBlocks.set(key, block);
+  });
 
-  if (detail.video) {
-    const videoContainer = document.createElement('div');
-    videoContainer.className = 'video-container';
-    const iframe = document.createElement('iframe');
-    iframe.src = detail.video.src;
-    iframe.title = detail.video.title || detail.title;
-    iframe.loading = 'lazy';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    iframe.allowFullscreen = true;
-    videoContainer.appendChild(iframe);
-    main.appendChild(videoContainer);
-  }
+  externalBlocks.forEach((block, index) => {
+    const key = block.title || block.thumb || block.embed || block.gallery?.[0]?.src || `config-${index}`;
+    mergedBlocks.set(key, block);
+  });
 
-  if (Array.isArray(detail.gallery) && detail.gallery.length) {
-    const gallerySection = document.createElement('section');
-    gallerySection.className = 'detail-gallery';
+  const blocks = Array.from(mergedBlocks.values());
 
-    detail.gallery.forEach((item) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'detail-item';
-      const fullImage = item.full || item.src;
-      button.dataset.full = fullImage;
-      if (item.alt) {
-        button.dataset.alt = item.alt;
-      }
-
-      const image = document.createElement('img');
-      image.src = item.thumb || item.src;
-      image.alt = item.alt || '';
-      image.loading = 'lazy';
-      button.appendChild(image);
-      gallerySection.appendChild(button);
+  if (!blocks.length) {
+    const message = document.createElement('p');
+    message.className = 'detail-description';
+    message.textContent = 'No content has been added yet.';
+    main.appendChild(message);
+  } else {
+    blocks.forEach((block) => {
+      main.appendChild(createDetailBlock(block));
     });
-
-    main.appendChild(gallerySection);
   }
 
   detailRoot.appendChild(main);
@@ -622,11 +783,13 @@ const setupThumbnailTones = () => {
   });
 };
 
-const init = () => {
-  renderDetailPage();
+const init = async () => {
+  await renderDetailPage();
   setupLightbox();
   setupAudioToggle();
   setupThumbnailTones();
 };
 
-document.addEventListener('DOMContentLoaded', init);
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+});
