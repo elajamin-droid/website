@@ -239,6 +239,16 @@ body[data-gallery="about"] main {
   max-width: 780px;
 }
 
+.detail-block {
+  width: 100%;
+}
+
+.detail-block + .detail-block {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(185, 122, 22, 0.35);
+}
+
 .about-bio {
   display: flex;
   align-items: center;

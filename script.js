@@ -159,14 +159,14 @@ const renderDetailPage = () => {
 
   if (detail.description) {
     const descriptionSection = document.createElement('section');
-    descriptionSection.className = 'detail-description';
+    descriptionSection.className = 'detail-description detail-block';
     descriptionSection.innerHTML = detail.description;
     main.appendChild(descriptionSection);
   }
 
   if (detail.video) {
     const videoContainer = document.createElement('div');
-    videoContainer.className = 'video-container';
+    videoContainer.className = 'video-container detail-block';
     const iframe = document.createElement('iframe');
     iframe.src = detail.video.src;
     iframe.title = detail.video.title || detail.title;
@@ -180,7 +180,7 @@ const renderDetailPage = () => {
 
   if (Array.isArray(detail.gallery) && detail.gallery.length) {
     const gallerySection = document.createElement('section');
-    gallerySection.className = 'detail-gallery';
+    gallerySection.className = 'detail-gallery detail-block';
 
     detail.gallery.forEach((item) => {
       const button = document.createElement('button');
