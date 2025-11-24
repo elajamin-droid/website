@@ -2,27 +2,27 @@ const detailData = {
   paintings: {
     title: 'Paintings',
     gallery: [
-      { src: 'images/Paintings/IMG20240121130029.webp' },
-      { src: 'images/Paintings/IMG20240121130143.webp' },
-      { src: 'images/Paintings/IMG20240121132133.webp' },
+      { src: 'images/Paintings/Paintings/IMG20240121130029.webp' },
+      { src: 'images/Paintings/Paintings/IMG20240121130143.webp' },
+      { src: 'images/Paintings/Paintings/IMG20240121132133.webp' },
       {
-        src: 'images/Paintings/IMG20240121130152.webp',
+        src: 'images/Paintings/Paintings/IMG20240121130152.webp',
         alt: 'Based on The Ellipse by René Magritte',
       },
-      { src: 'images/Paintings/IMG20240121130258.webp' },
-      { src: 'images/Paintings/img20250925_16180935.webp' },
-      { src: 'images/Paintings/img20250925_16201163.webp' },
-      { src: 'images/Paintings/IMG20240121133044.webp' },
+      { src: 'images/Paintings/Paintings/IMG20240121130258.webp' },
+      { src: 'images/Paintings/Paintings/img20250925_16180935.webp' },
+      { src: 'images/Paintings/Paintings/img20250925_16201163.webp' },
+      { src: 'images/Paintings/Paintings/IMG20240121133044.webp' },
     ],
   },
   characters: {
     title: 'Characters',
     description: '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
     gallery: [
-      { src: 'images/Characters/Screenshot_2025-10-21_202456.webp' },
-      { src: 'images/Characters/Screenshot_2025-10-21_202831.webp' },
+      { src: 'images/Characters/Characters/Screenshot_2025-10-21_202456.webp' },
+      { src: 'images/Characters/Characters/Screenshot_2025-10-21_202831.webp' },
       {
-        src: 'images/Characters/Reference.webp',
+        src: 'images/Characters/Characters/Reference.webp',
         alt: 'Concept art by Joep Eilander',
       },
     ],
@@ -33,23 +33,23 @@ const detailData = {
       src: 'https://www.youtube.com/embed/BMqpDYKC6Ms?rel=0&controls=1&modestbranding=1',
       title: 'Moois Genoeg',
     },
-    gallery: [{ src: 'images/Animations/JellyFrog.gif' }],
+    gallery: [{ src: 'images/Animations/Animations/JellyFrog.gif' }],
   },
   games: {
     title: 'Games',
     gallery: [
-      { src: 'images/Games/Materials2.webp' },
-      { src: 'images/Games/Unnamed.webp' },
-      { src: 'images/Games/efwgeqq-1.webp' },
-      { src: 'images/Games/fefefeefe-0.webp' },
-      { src: 'images/Games/fefefeefefffeefwef-0.webp' },
-      { src: 'images/Games/media4.gif' },
+      { src: 'images/Games/Games/Materials2.webp' },
+      { src: 'images/Games/Games/Unnamed.webp' },
+      { src: 'images/Games/Games/efwgeqq-1.webp' },
+      { src: 'images/Games/Games/fefefeefe-0.webp' },
+      { src: 'images/Games/Games/fefefeefefffeefwef-0.webp' },
+      { src: 'images/Games/Games/media4.gif' },
     ],
   },
   'other-works': {
     title: 'Other Works',
     gallery: [
-      { src: 'images/Other%20Works/grehtre.webp' },
+      { src: 'images/Other%20Works/Other%20Works/grehtre.webp' },
     ],
   },
   about: {
@@ -58,7 +58,7 @@ const detailData = {
         <div class="about-bio">
           <img
             class="about-portrait"
-            src="images/About%20me/IMG20251117164816.webp"
+            src="images/About%20me/About%20me/IMG20251117164816.webp"
             alt="Portrait of Nacef el Ajami"
             loading="lazy"
           />
@@ -109,7 +109,7 @@ const updateAudioToggleButton = () => {
   toggle.setAttribute('aria-label', isActive ? 'Mute hover sounds' : 'Unmute hover sounds');
 
   if (icon) {
-    icon.src = isActive ? 'images/Index/Unmuted.png' : 'images/Index/Muted.png';
+    icon.src = isActive ? 'images/Index/Index/Unmuted.png' : 'images/Index/Index/Muted.png';
     icon.alt = isActive ? 'Unmuted speaker icon' : 'Muted speaker icon';
   }
 };
