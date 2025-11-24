@@ -165,13 +165,6 @@ const renderDetailPage = () => {
 
   const main = document.createElement('main');
 
-  if (detail.description) {
-    const descriptionSection = document.createElement('section');
-    descriptionSection.className = 'detail-description';
-    descriptionSection.innerHTML = detail.description;
-    main.appendChild(descriptionSection);
-  }
-
   if (detail.video) {
     const videoContainer = document.createElement('div');
     videoContainer.className = 'video-container';
@@ -184,6 +177,13 @@ const renderDetailPage = () => {
     iframe.allowFullscreen = true;
     videoContainer.appendChild(iframe);
     main.appendChild(videoContainer);
+  }
+
+  let descriptionSection;
+  if (detail.description) {
+    descriptionSection = document.createElement('section');
+    descriptionSection.className = 'detail-description';
+    descriptionSection.innerHTML = detail.description;
   }
 
   if (Array.isArray(detail.gallery) && detail.gallery.length) {
@@ -210,6 +210,10 @@ const renderDetailPage = () => {
     });
 
     main.appendChild(gallerySection);
+  }
+
+  if (descriptionSection) {
+    main.appendChild(descriptionSection);
   }
 
   detailRoot.appendChild(main);
