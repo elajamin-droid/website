@@ -7,6 +7,19 @@ body {
   padding: 0;
 }
 
+a {
+  color: #d77700;
+  text-decoration-color: #e49b3a;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  transition: color 0.2s ease, text-decoration-color 0.2s ease;
+}
+
+a:hover {
+  color: #ff9c33;
+  text-decoration-color: #ff9c33;
+}
+
 header {
   margin-top: 40px;
 }
@@ -64,12 +77,12 @@ nav ul {
 
 nav a {
   text-decoration: none;
-  color: #b97a16;
+  color: #d77700;
   transition: color 0.3s;
 }
 
 nav a:hover {
-  color: #ffb300;
+  color: #ff9c33;
 }
 
 .game-embed-wrapper {
@@ -175,16 +188,16 @@ nav a:hover {
 }
 
 .about-link {
-  color: inherit;
+  color: #d77700;
   text-decoration: none;
-  border-bottom: 2px solid #b97a16;
+  border-bottom: 2px solid #d77700;
   padding-bottom: 4px;
   transition: color 0.3s ease, border-color 0.3s ease;
 }
 
 .about-link:hover {
-  color: #b97a16;
-  border-color: #ffb300;
+  color: #ff9c33;
+  border-color: #ff9c33;
 }
 
 .about p {
@@ -224,13 +237,13 @@ footer {
 .back-link {
   display: inline-block;
   margin-bottom: 15px;
-  color: #b97a16;
+  color: #d77700;
   text-decoration: none;
   font-weight: bold;
 }
 
 .back-link:hover {
-  color: #ffb300;
+  color: #ff9c33;
 }
 
 .detail-page main {
@@ -255,11 +268,33 @@ body[data-gallery="about"] main {
 }
 
 .detail-description {
-  margin: 0 auto 30px;
-  font-size: 1em;
-  line-height: 1.6;
-  max-width: 780px;
+  margin: 0 auto 32px;
+  font-size: 1.05em;
+  line-height: 1.65;
+  max-width: 840px;
   text-align: center;
+  background: #fffaf0;
+  border: 1px solid #ebd8b4;
+  border-radius: 14px;
+  padding: 18px 22px;
+  box-shadow: 0 12px 26px rgba(59, 44, 26, 0.08);
+  position: relative;
+}
+
+.detail-description::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #d77700, #ffb84d);
+}
+
+.detail-description p {
+  margin: 12px auto 0;
 }
 
 .about-bio {
