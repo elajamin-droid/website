@@ -17,7 +17,8 @@ const detailData = {
   },
   characters: {
     title: 'Characters',
-    description: '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
+    description:
+      '<p>Concept art in collaboration with <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>, capturing personalities with refined silhouettes and color studies.</p>',
     gallery: [
       { src: 'images/Characters/Characters/Screenshot_2025-10-21_202456.webp' },
       { src: 'images/Characters/Characters/Screenshot_2025-10-21_202831.webp' },
@@ -38,7 +39,7 @@ const detailData = {
   games: {
     title: 'Games',
     description:
-      '<p>Assets I made for a game called Meliora whilst working at M2H, the textures used were made by <a href="https://jc_ptrs.artstation.com/">Carl Peters</a>.</p>',
+      '<p>Selected assets crafted for the game Meliora during my time at M2H, paired with textures by <a href="https://jc_ptrs.artstation.com/">Carl Peters</a> to bring a warm, lived-in world to life.</p>',
     gallery: [
       { src: 'images/Games/Games/Materials2.webp' },
       { src: 'images/Games/Games/Unnamed.webp' },
