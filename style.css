@@ -79,8 +79,10 @@ nav a:hover {
 }
 
 .game-embed-wrapper iframe {
-  max-width: 100%;
+  width: min(1129px, 100%);
+  aspect-ratio: 1129 / 635;
   height: auto;
+  display: block;
 }
 
 .gallery {
