@@ -38,7 +38,7 @@ const detailData = {
   games: {
     title: 'Games',
     description:
-      '<p>Assets I made for a game called Meliora whilst working at M2H, the textures used were made by Carl Peters.</p>',
+      '<p>Assets I made for a game called Meliora whilst working at M2H, the textures used were made by <a href="https://jc_ptrs.artstation.com/">Carl Peters</a>.</p>',
     gallery: [
       { src: 'images/Games/Games/Materials2.webp' },
       { src: 'images/Games/Games/Unnamed.webp' },
