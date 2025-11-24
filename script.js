@@ -22,7 +22,7 @@ const detailData = {
       { src: 'images/Characters/Screenshot_2025-10-21_202456.webp' },
       { src: 'images/Characters/Screenshot_2025-10-21_202831.webp' },
       {
-        src: 'images/Characters/Reference.png',
+        src: 'images/Characters/Reference.webp',
         alt: 'Concept art by Joep Eilander',
       },
     ],
