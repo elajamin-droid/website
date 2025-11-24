@@ -613,7 +613,31 @@ const setupThumbnailTones = () => {
   });
 };
 
-const setupZeroGravityPlayground = () => {
+const waitForImagesToLoad = (elements) => {
+  const images = elements.flatMap((el) => Array.from(el.querySelectorAll('img')));
+
+  if (!images.length) {
+    return Promise.resolve();
+  }
+
+  const loaders = images.map(
+    (img) =>
+      new Promise((resolve) => {
+        if (img.complete) {
+          resolve();
+          return;
+        }
+
+        const settle = () => resolve();
+        img.addEventListener('load', settle, { once: true });
+        img.addEventListener('error', settle, { once: true });
+      }),
+  );
+
+  return Promise.all(loaders);
+};
+
+const setupZeroGravityPlayground = async () => {
   const movableSelectors = [
     '.gallery .card',
     '.about-link',
@@ -628,6 +652,8 @@ const setupZeroGravityPlayground = () => {
   if (!items.length) {
     return;
   }
+
+  await waitForImagesToLoad(items);
 
   document.body.classList.add('zero-g-mode');
   document.body.style.height = `${window.innerHeight}px`;
