@@ -34,6 +34,10 @@ header {
   display: inline-block;
 }
 
+#logo-gif {
+  cursor: pointer;
+}
+
 .logo {
   width: 80px;
   display: block;
@@ -141,6 +145,17 @@ nav a:hover {
   will-change: transform;
   flex: 1 1 220px;
   max-width: 260px;
+}
+
+.physics-mode {
+  position: relative;
+  overflow: hidden;
+}
+
+.physics-item {
+  will-change: transform;
+  transition: none !important;
+  touch-action: none;
 }
 
 .card:hover {
