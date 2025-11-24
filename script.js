@@ -93,20 +93,27 @@ const playHoverSound = (playbackRate = 1) => {
   }
 
   const oscillator = audioContext.createOscillator();
+  const filter = audioContext.createBiquadFilter();
   const gainNode = audioContext.createGain();
 
   const now = audioContext.currentTime;
-  const duration = 0.15;
-  const frequency = 660 * playbackRate;
+  const duration = 0.18;
+  const baseFrequency = 520 * playbackRate;
 
   oscillator.type = 'sine';
-  oscillator.frequency.setValueAtTime(frequency, now);
+  oscillator.frequency.setValueAtTime(baseFrequency, now);
+  oscillator.frequency.exponentialRampToValueAtTime(baseFrequency * 0.65, now + duration);
+
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(1400, now);
+  filter.frequency.exponentialRampToValueAtTime(650, now + duration);
+  filter.Q.value = 1.2;
 
   gainNode.gain.setValueAtTime(0, now);
-  gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
-  gainNode.gain.linearRampToValueAtTime(0, now + duration);
+  gainNode.gain.linearRampToValueAtTime(0.24, now + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
-  oscillator.connect(gainNode).connect(audioContext.destination);
+  oscillator.connect(filter).connect(gainNode).connect(audioContext.destination);
   oscillator.start(now);
   oscillator.stop(now + duration);
 };
