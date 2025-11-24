@@ -32,12 +32,21 @@ header {
 
 .logo-section {
   display: inline-block;
+  position: relative;
 }
 
 .logo {
   width: 80px;
   display: block;
   margin: 0 auto 10px;
+}
+
+.logo-reverse-canvas {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  display: block;
+  pointer-events: none;
 }
 
 h1 {
