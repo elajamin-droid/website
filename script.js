@@ -75,29 +75,40 @@ const detailData = {
   }
 };
 
-let hoverAudioElement;
+let audioContext;
 let isHoverSoundMuted = true;
 
-const loadHoverSound = () => {
-  if (!hoverAudioElement) {
-    hoverAudioElement = new Audio('Sounds/Woep.ogg');
-    hoverAudioElement.preload = 'auto';
-    hoverAudioElement.volume = 0.9;
+const ensureAudioContext = () => {
+  if (!audioContext) {
+    audioContext = new AudioContext();
   }
 };
 
 const playHoverSound = (playbackRate = 1) => {
   if (isHoverSoundMuted) return;
 
-  loadHoverSound();
-  const sound = hoverAudioElement.cloneNode(true);
-  sound.volume = hoverAudioElement.volume;
-  sound.playbackRate = playbackRate;
-
-  const playPromise = sound.play();
-  if (playPromise?.catch) {
-    playPromise.catch(() => {});
+  ensureAudioContext();
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
   }
+
+  const oscillator = audioContext.createOscillator();
+  const gainNode = audioContext.createGain();
+
+  const now = audioContext.currentTime;
+  const duration = 0.15;
+  const frequency = 660 * playbackRate;
+
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(frequency, now);
+
+  gainNode.gain.setValueAtTime(0, now);
+  gainNode.gain.linearRampToValueAtTime(0.3, now + 0.01);
+  gainNode.gain.linearRampToValueAtTime(0, now + duration);
+
+  oscillator.connect(gainNode).connect(audioContext.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration);
 };
 
 const updateAudioToggleButton = () => {
