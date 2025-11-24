@@ -17,7 +17,8 @@ const detailData = {
   },
   characters: {
     title: 'Characters',
-    description: '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
+    description:
+      '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
     gallery: [
       { src: 'images/Characters/Characters/Screenshot_2025-10-21_202456.webp' },
       { src: 'images/Characters/Characters/Screenshot_2025-10-21_202831.webp' },
@@ -207,6 +208,10 @@ const renderDetailPage = () => {
     descriptionSection.innerHTML = detail.description;
   }
 
+  if (descriptionSection) {
+    main.appendChild(descriptionSection);
+  }
+
   if (Array.isArray(detail.gallery) && detail.gallery.length) {
     const gallerySection = document.createElement('section');
     gallerySection.className = 'detail-gallery';
@@ -231,10 +236,6 @@ const renderDetailPage = () => {
     });
 
     main.appendChild(gallerySection);
-  }
-
-  if (descriptionSection) {
-    main.appendChild(descriptionSection);
   }
 
   detailRoot.appendChild(main);
