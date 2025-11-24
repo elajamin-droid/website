@@ -86,12 +86,13 @@ const loadHoverSound = () => {
   }
 };
 
-const playHoverSound = () => {
+const playHoverSound = (playbackRate = 1) => {
   if (isHoverSoundMuted) return;
 
   loadHoverSound();
   const sound = hoverAudioElement.cloneNode(true);
   sound.volume = hoverAudioElement.volume;
+  sound.playbackRate = playbackRate;
 
   const playPromise = sound.play();
   if (playPromise?.catch) {
@@ -564,9 +565,14 @@ const setupThumbnailTones = () => {
   const cards = Array.from(document.querySelectorAll('.gallery .card'));
   if (!cards.length) return;
 
-  const trigger = () => playHoverSound();
+  const minRate = 0.85;
+  const maxRate = 1.15;
+  const step = cards.length > 1 ? (maxRate - minRate) / (cards.length - 1) : 0;
 
-  cards.forEach((card) => {
+  cards.forEach((card, index) => {
+    const playbackRate = minRate + step * index;
+    const trigger = () => playHoverSound(playbackRate);
+
     card.addEventListener('mouseenter', trigger);
     card.addEventListener('focus', trigger);
   });
