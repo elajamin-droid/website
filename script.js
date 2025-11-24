@@ -656,7 +656,6 @@ const setupZeroGravityPlayground = async () => {
   await waitForImagesToLoad(items);
 
   document.body.classList.add('zero-g-mode');
-  document.body.style.height = `${window.innerHeight}px`;
 
   let boundsWidth = window.innerWidth;
   let boundsHeight = window.innerHeight;
@@ -690,6 +689,24 @@ const setupZeroGravityPlayground = async () => {
 
     return body;
   });
+
+  const updateBounds = () => {
+    const margin = 20;
+    const maxRight = Math.max(
+      window.innerWidth,
+      ...bodies.map((body) => body.x + body.width + margin),
+    );
+    const maxBottom = Math.max(
+      window.innerHeight,
+      ...bodies.map((body) => body.y + body.height + margin),
+    );
+
+    boundsWidth = maxRight;
+    boundsHeight = maxBottom;
+    document.body.style.height = `${boundsHeight}px`;
+  };
+
+  updateBounds();
 
   const clampToBounds = (body) => {
     const maxX = boundsWidth - body.width;
@@ -857,9 +874,7 @@ const setupZeroGravityPlayground = async () => {
   window.addEventListener('pointercancel', endDrag);
 
   window.addEventListener('resize', () => {
-    boundsWidth = window.innerWidth;
-    boundsHeight = window.innerHeight;
-    document.body.style.height = `${boundsHeight}px`;
+    updateBounds();
     bodies.forEach((body) => clampToBounds(body));
   });
 

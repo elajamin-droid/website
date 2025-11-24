@@ -8,7 +8,7 @@ body {
 }
 
 body.zero-g-mode {
-  overflow: hidden;
+  overflow: auto;
   min-height: 100vh;
   position: relative;
   touch-action: none;
