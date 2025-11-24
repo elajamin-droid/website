@@ -62,6 +62,16 @@ nav ul {
   margin-bottom: 40px;
 }
 
+a {
+  color: #c67a00;
+  text-decoration: none;
+  transition: color 0.3s ease, border-color 0.3s ease;
+}
+
+a:hover {
+  color: #ff9f1c;
+}
+
 nav a {
   text-decoration: none;
   color: #b97a16;
@@ -260,6 +270,30 @@ body[data-gallery="about"] main {
   line-height: 1.6;
   max-width: 780px;
   text-align: center;
+  background: #fffaf2;
+  border: 1px solid #e8dbc3;
+  border-radius: 16px;
+  padding: 18px 22px;
+  box-shadow: 0 12px 32px rgba(59, 44, 26, 0.08);
+}
+
+.detail-description p {
+  margin: 0;
+}
+
+.detail-lead {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.detail-description a {
+  color: #c67a00;
+  border-bottom: 1px solid rgba(198, 122, 0, 0.35);
+}
+
+.detail-description a:hover {
+  color: #ff9f1c;
+  border-color: rgba(255, 159, 28, 0.7);
 }
 
 .about-bio {
