@@ -613,11 +613,182 @@ const setupThumbnailTones = () => {
   });
 };
 
+const loadMatter = () => {
+  if (window.Matter) {
+    return Promise.resolve(window.Matter);
+  }
+
+  const existingLoader = document.querySelector('script[data-matter-loader="true"]');
+  if (existingLoader) {
+    return new Promise((resolve, reject) => {
+      existingLoader.addEventListener('load', () => resolve(window.Matter));
+      existingLoader.addEventListener('error', reject);
+    });
+  }
+
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/matter-js@0.20.0/build/matter.min.js';
+    script.async = true;
+    script.dataset.matterLoader = 'true';
+    script.onload = () => resolve(window.Matter);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+};
+
+const createPhysicsItems = (Matter) => {
+  const selectors = ['header .logo-section img', '#audio-toggle', '.gallery .card', '.about-link'];
+  const elements = [];
+  const seen = new Set();
+  selectors.forEach((selector) => {
+    document.querySelectorAll(selector).forEach((element) => {
+      if (!seen.has(element)) {
+        seen.add(element);
+        elements.push(element);
+      }
+    });
+  });
+
+  const scrollX = window.scrollX || 0;
+  const scrollY = window.scrollY || 0;
+
+  return elements
+    .filter((element) => element.offsetParent !== null)
+    .map((element) => {
+      const rect = element.getBoundingClientRect();
+      const width = Math.max(rect.width, 20);
+      const height = Math.max(rect.height, 20);
+      const centerX = rect.left + scrollX + width / 2;
+      const centerY = rect.top + scrollY + height / 2;
+
+      element.classList.add('physics-item');
+      element.style.position = 'absolute';
+      element.style.left = '0';
+      element.style.top = '0';
+      element.style.width = `${width}px`;
+      element.style.height = `${height}px`;
+      element.style.transform = `translate(${centerX - width / 2}px, ${centerY - height / 2}px)`;
+      element.style.zIndex = '15';
+
+      const body = Matter.Bodies.rectangle(centerX, centerY, width, height, {
+        restitution: 0.2,
+        friction: 0.3,
+        frictionAir: 0.015,
+      });
+
+      return { element, body, width, height };
+    });
+};
+
+const setupPhysics = async () => {
+  if (!document.getElementById('logo-gif') || document.body.dataset.gallery) {
+    return;
+  }
+
+  const logo = document.getElementById('logo-gif');
+  if (!logo) return;
+
+  logo.title = 'Click to drop everything';
+
+  const startPhysics = async () => {
+    if (document.body.classList.contains('physics-mode')) {
+      return;
+    }
+
+    let Matter;
+    try {
+      Matter = await loadMatter();
+    } catch (error) {
+      console.error('Failed to load physics engine', error);
+      return;
+    }
+
+    if (!Matter) {
+      return;
+    }
+
+    const items = createPhysicsItems(Matter);
+    if (!items.length) {
+      return;
+    }
+
+    document.body.classList.add('physics-mode');
+    document.body.style.minHeight = `${Math.max(window.innerHeight, document.documentElement.scrollHeight)}px`;
+
+    const engine = Matter.Engine.create({
+      gravity: { y: 1.1 },
+    });
+
+    const worldWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const worldHeight = Math.max(window.innerHeight, document.documentElement.scrollHeight);
+
+    const createWall = (x, y, width, height) =>
+      Matter.Bodies.rectangle(x, y, width, height, { isStatic: true, restitution: 0.6 });
+
+    const ground = createWall(worldWidth / 2, worldHeight + 80, worldWidth, 160);
+    const ceiling = createWall(worldWidth / 2, -80, worldWidth, 160);
+    const leftWall = createWall(-80, worldHeight / 2, 160, worldHeight * 2);
+    const rightWall = createWall(worldWidth + 80, worldHeight / 2, 160, worldHeight * 2);
+
+    Matter.Composite.add(engine.world, [ground, ceiling, leftWall, rightWall, ...items.map(({ body }) => body)]);
+
+    const mouse = Matter.Mouse.create(document.body);
+    const mouseConstraint = Matter.MouseConstraint.create(engine, {
+      mouse,
+      constraint: {
+        stiffness: 0.22,
+        render: { visible: false },
+      },
+    });
+
+    Matter.Composite.add(engine.world, mouseConstraint);
+
+    const runner = Matter.Runner.create();
+    Matter.Runner.run(runner, engine);
+
+    const updateDom = () => {
+      items.forEach(({ element, body, width, height }) => {
+        element.style.transform = `translate(${body.position.x - width / 2}px, ${body.position.y - height / 2}px) rotate(${body.angle}rad)`;
+      });
+      requestAnimationFrame(updateDom);
+    };
+
+    updateDom();
+
+    let resizeTimeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        const newWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        const newHeight = Math.max(window.innerHeight, document.documentElement.scrollHeight);
+        Matter.Body.setPosition(ground, { x: newWidth / 2, y: newHeight + 80 });
+        Matter.Body.setPosition(ceiling, { x: newWidth / 2, y: -80 });
+        Matter.Body.setPosition(leftWall, { x: -80, y: newHeight / 2 });
+        Matter.Body.setPosition(rightWall, { x: newWidth + 80, y: newHeight / 2 });
+      }, 200);
+    };
+
+    window.addEventListener('resize', handleResize);
+  };
+
+  logo.addEventListener('click', startPhysics);
+  logo.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      startPhysics();
+    }
+  });
+  logo.setAttribute('tabindex', '0');
+  logo.setAttribute('role', 'button');
+};
+
 const init = () => {
   renderDetailPage();
   setupLightbox();
   setupAudioToggle();
   setupThumbnailTones();
+  setupPhysics();
 };
 
 if (document.readyState === 'loading') {
