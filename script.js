@@ -299,6 +299,14 @@ const setupLightbox = () => {
   let dragStartX = 0;
   let dragStartY = 0;
 
+  const enforcePixelRendering = () => {
+    image.style.setProperty('image-rendering', 'pixelated', 'important');
+    image.style.setProperty('-ms-interpolation-mode', 'nearest-neighbor');
+  };
+
+  enforcePixelRendering();
+  image.addEventListener('load', enforcePixelRendering);
+
   const clampPan = () => {
     const baseWidth = image.offsetWidth || 0;
     const baseHeight = image.offsetHeight || 0;
