@@ -161,6 +161,88 @@ const setupAudioToggle = () => {
   });
 };
 
+const setupLogoReversePlayback = () => {
+  const logo = document.querySelector('.logo-section img');
+
+  if (!logo || typeof ImageDecoder === 'undefined' || typeof createImageBitmap !== 'function') {
+    return;
+  }
+
+  let framesPromise;
+  let isPlayingReverse = false;
+
+  const loadFrames = () => {
+    if (!framesPromise) {
+      framesPromise = (async () => {
+        const response = await fetch(logo.src, { cache: 'no-store' });
+        const buffer = await response.arrayBuffer();
+        const decoder = new ImageDecoder({ data: buffer, type: 'image/gif' });
+        await decoder.tracks.ready;
+
+        const track = decoder.tracks?.selectedTrack;
+        if (!track) return null;
+
+        const frameCount = track.frameCount || 0;
+        const frames = [];
+
+        for (let frameIndex = 0; frameIndex < frameCount; frameIndex += 1) {
+          // eslint-disable-next-line no-await-in-loop
+          const { image } = await decoder.decode({ frameIndex, completeFramesOnly: true });
+          frames.push(image);
+        }
+
+        return frames;
+      })().catch(() => null);
+    }
+
+    return framesPromise;
+  };
+
+  const playReverse = async () => {
+    if (isPlayingReverse) return;
+
+    const frames = await loadFrames();
+    if (!frames?.length) return;
+
+    isPlayingReverse = true;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = logo.naturalWidth || logo.width || logo.clientWidth;
+    canvas.height = logo.naturalHeight || logo.height || logo.clientHeight;
+    canvas.className = 'logo-reverse-canvas';
+    canvas.style.width = `${logo.clientWidth || logo.width}px`;
+    canvas.style.height = `${logo.clientHeight || logo.height}px`;
+
+    const context = canvas.getContext('2d');
+    const container = logo.parentElement;
+
+    if (!container || !context) {
+      isPlayingReverse = false;
+      return;
+    }
+
+    container.appendChild(canvas);
+    logo.style.visibility = 'hidden';
+
+    const frameDurationMs = 80;
+
+    for (let index = frames.length - 1; index >= 0; index -= 1) {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(frames[index], 0, 0, canvas.width, canvas.height);
+      // eslint-disable-next-line no-await-in-loop
+      await new Promise((resolve) => setTimeout(resolve, frameDurationMs));
+    }
+
+    canvas.remove();
+    logo.style.visibility = '';
+    isPlayingReverse = false;
+  };
+
+  logo.addEventListener('click', () => {
+    void playReverse();
+  });
+};
+
 const renderDetailPage = () => {
   const pageKey = document.body.dataset.gallery;
   const detailRoot = document.getElementById('detail-root');
@@ -617,6 +699,7 @@ const init = () => {
   renderDetailPage();
   setupLightbox();
   setupAudioToggle();
+  setupLogoReversePlayback();
   setupThumbnailTones();
 };
 
