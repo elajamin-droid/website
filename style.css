@@ -454,7 +454,6 @@ body[data-gallery="about"] main {
   image-rendering: crisp-edges;
   image-rendering: pixelated;
   -ms-interpolation-mode: nearest-neighbor;
-  transition: transform 0.2s ease;
   cursor: zoom-in;
   will-change: transform;
 }

@@ -290,8 +290,8 @@ const setupLightbox = () => {
   let zoomLevel = 1;
   const minZoom = 1;
   const maxZoom = 16;
-  const zoomMultiplier = 1.25;
   const quickZoomLevel = 10;
+  const zoomSteps = [1, 2, 3, 4, 5, 6, 8, 10, 12, 16];
   let panX = 0;
   let panY = 0;
   let isDragging = false;
@@ -318,7 +318,9 @@ const setupLightbox = () => {
 
   const updateImageTransform = () => {
     clampPan();
-    image.style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+    const translateX = Math.round(panX);
+    const translateY = Math.round(panY);
+    image.style.transform = `translate(${translateX}px, ${translateY}px) scale(${zoomLevel})`;
     image.classList.toggle('is-zoomed', zoomLevel > minZoom);
   };
 
@@ -442,8 +444,19 @@ const setupLightbox = () => {
   };
 
   const setZoom = (targetZoom, originX, originY) => {
+    const snapToZoomStep = (value) => {
+      let closest = zoomSteps[0];
+      for (const step of zoomSteps) {
+        if (Math.abs(step - value) < Math.abs(closest - value)) {
+          closest = step;
+        }
+      }
+
+      return Math.min(maxZoom, Math.max(minZoom, closest));
+    };
+
     const previousZoom = zoomLevel;
-    const nextZoom = Math.min(maxZoom, Math.max(minZoom, targetZoom));
+    const nextZoom = snapToZoomStep(targetZoom);
     if (Math.abs(nextZoom - previousZoom) < 0.001) {
       return;
     }
@@ -454,11 +467,15 @@ const setupLightbox = () => {
   };
 
   const zoomIn = (originX, originY) => {
-    setZoom(zoomLevel * zoomMultiplier, originX, originY);
+    const currentIndex = zoomSteps.indexOf(zoomLevel);
+    const nextIndex = Math.min(zoomSteps.length - 1, currentIndex + 1);
+    setZoom(zoomSteps[nextIndex], originX, originY);
   };
 
   const zoomOut = (originX, originY) => {
-    setZoom(zoomLevel / zoomMultiplier, originX, originY);
+    const currentIndex = zoomSteps.indexOf(zoomLevel);
+    const nextIndex = Math.max(0, currentIndex - 1);
+    setZoom(zoomSteps[nextIndex], originX, originY);
   };
 
   const openLightbox = (index) => {
