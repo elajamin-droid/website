@@ -18,7 +18,7 @@ const detailData = {
   characters: {
     title: 'Characters',
     description:
-      '<p class="detail-lead">Concept art collection featuring designs by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
+      '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
     gallery: [
       { src: 'images/Characters/Characters/Screenshot_2025-10-21_202456.webp' },
       { src: 'images/Characters/Characters/Screenshot_2025-10-21_202831.webp' },
@@ -39,7 +39,7 @@ const detailData = {
   games: {
     title: 'Games',
     description:
-      '<p class="detail-lead">Crafted assets for the game Meliora during my time at M2H, complemented by textures from <a href="https://jc_ptrs.artstation.com/">Carl Peters</a>.</p>',
+      '<p>Assets I made for a game called Meliora whilst working at M2H, the textures used were made by <a href="https://jc_ptrs.artstation.com/">Carl Peters</a>.</p>',
     gallery: [
       { src: 'images/Games/Games/Materials2.webp' },
       { src: 'images/Games/Games/Unnamed.webp' },
@@ -208,6 +208,10 @@ const renderDetailPage = () => {
     descriptionSection.innerHTML = detail.description;
   }
 
+  if (descriptionSection) {
+    main.appendChild(descriptionSection);
+  }
+
   if (Array.isArray(detail.gallery) && detail.gallery.length) {
     const gallerySection = document.createElement('section');
     gallerySection.className = 'detail-gallery';
@@ -232,10 +236,6 @@ const renderDetailPage = () => {
     });
 
     main.appendChild(gallerySection);
-  }
-
-  if (descriptionSection) {
-    main.appendChild(descriptionSection);
   }
 
   detailRoot.appendChild(main);
