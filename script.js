@@ -562,7 +562,13 @@ const setupLightbox = () => {
 };
 
 const setupThumbnailTones = () => {
-  const cards = Array.from(document.querySelectorAll('.gallery .card'));
+  const cards = Array.from(document.querySelectorAll('.gallery .card')).sort((a, b) => {
+    const position = a.compareDocumentPosition(b);
+    if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+    if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+    return 0;
+  });
+
   if (!cards.length) return;
 
   const minRate = 0.85;
@@ -571,7 +577,9 @@ const setupThumbnailTones = () => {
 
   cards.forEach((card, index) => {
     const playbackRate = minRate + step * index;
-    const trigger = () => playHoverSound(playbackRate);
+    card.dataset.playbackRate = playbackRate.toFixed(3);
+
+    const trigger = () => playHoverSound(Number(card.dataset.playbackRate));
 
     card.addEventListener('mouseenter', trigger);
     card.addEventListener('focus', trigger);
