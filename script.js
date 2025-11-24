@@ -5,7 +5,10 @@ const detailData = {
       { src: 'images/Paintings/IMG20240121130029.webp' },
       { src: 'images/Paintings/IMG20240121130143.webp' },
       { src: 'images/Paintings/IMG20240121132133.webp' },
-      { src: 'images/Paintings/IMG20240121130152.webp' },
+      {
+        src: 'images/Paintings/IMG20240121130152.webp',
+        alt: 'Based on The Ellipse by René Magritte',
+      },
       { src: 'images/Paintings/IMG20240121130258.webp' },
       { src: 'images/Paintings/img20250925_16180935.webp' },
       { src: 'images/Paintings/img20250925_16201163.webp' },
@@ -14,9 +17,14 @@ const detailData = {
   },
   characters: {
     title: 'Characters',
+    description: '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
     gallery: [
       { src: 'images/Characters/Screenshot_2025-10-21_202456.webp' },
       { src: 'images/Characters/Screenshot_2025-10-21_202831.webp' },
+      {
+        src: 'images/Characters/Reference.webp',
+        alt: 'Concept art by Joep Eilander',
+      },
     ],
   },
   animations: {
@@ -42,7 +50,6 @@ const detailData = {
     title: 'Other Works',
     gallery: [
       { src: 'images/Other%20Works/grehtre.webp' },
-      { src: 'images/Other%20Works/Thumbnail.webp' },
     ],
   },
   about: {
@@ -68,22 +75,27 @@ const detailData = {
   }
 };
 
-let hoverAudioContext;
-let hoverMasterGain;
+let hoverAudioElement;
 let isHoverSoundMuted = true;
-const HOVER_ROOT_NOTES = [130.81, 146.83, 164.81, 196.0, 220.0];
-const MAX_HOVER_VOICES = 8;
 
-const ensureHoverAudio = () => {
-  if (!hoverAudioContext) {
-    hoverAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-    hoverMasterGain = hoverAudioContext.createGain();
-    hoverMasterGain.gain.value = isHoverSoundMuted ? 0 : 0.9;
-    hoverMasterGain.connect(hoverAudioContext.destination);
+const loadHoverSound = () => {
+  if (!hoverAudioElement) {
+    hoverAudioElement = new Audio('Sounds/Woep.ogg');
+    hoverAudioElement.preload = 'auto';
+    hoverAudioElement.volume = 0.9;
   }
+};
 
-  if (hoverAudioContext.state === 'suspended') {
-    hoverAudioContext.resume();
+const playHoverSound = () => {
+  if (isHoverSoundMuted) return;
+
+  loadHoverSound();
+  const sound = hoverAudioElement.cloneNode(true);
+  sound.volume = hoverAudioElement.volume;
+
+  const playPromise = sound.play();
+  if (playPromise?.catch) {
+    playPromise.catch(() => {});
   }
 };
 
@@ -104,9 +116,6 @@ const updateAudioToggleButton = () => {
 
 const setHoverSoundMuted = (muted) => {
   isHoverSoundMuted = muted;
-  if (hoverMasterGain) {
-    hoverMasterGain.gain.value = muted ? 0 : 0.9;
-  }
   updateAudioToggleButton();
 };
 
@@ -117,7 +126,6 @@ const setupAudioToggle = () => {
   updateAudioToggleButton();
   toggle.addEventListener('click', () => {
     if (isHoverSoundMuted) {
-      ensureHoverAudio();
       setHoverSoundMuted(false);
     } else {
       setHoverSoundMuted(true);
@@ -190,6 +198,7 @@ const renderDetailPage = () => {
       button.dataset.full = fullImage;
       if (item.alt) {
         button.dataset.alt = item.alt;
+        button.title = item.alt;
       }
 
       const image = document.createElement('img');
@@ -551,74 +560,11 @@ const setupThumbnailTones = () => {
   const cards = Array.from(document.querySelectorAll('.gallery .card'));
   if (!cards.length) return;
 
-  const activeVoices = new Set();
+  const trigger = () => playHoverSound();
 
-  const playChord = (rootFreq) => {
-    if (isHoverSoundMuted) return;
-
-    ensureHoverAudio();
-
-    // Chord tones (root + perfect fifth + nice mellow ninth)
-    const freqs = [
-      rootFreq,
-      rootFreq * 1.5,        // perfect 5th
-      rootFreq * 1.12246     // major 9th (beautifully airy)
-    ];
-
-    const now = hoverAudioContext.currentTime;
-    const voiceGroup = [];
-
-    // Kill old voices if too many
-    if (activeVoices.size > MAX_HOVER_VOICES) {
-      const oldest = activeVoices.values().next().value;
-      oldest.stop();
-      activeVoices.delete(oldest);
-    }
-
-    freqs.forEach((freq, i) => {
-      const osc = hoverAudioContext.createOscillator();
-      const g = hoverAudioContext.createGain();
-
-      // Slight wave variation per voice
-      osc.type = i === 0 ? "triangle" : "sine";
-
-      // Add subtle random pitch bend target
-      const bend = freq * (1 + (Math.random() * 0.02 - 0.01)); // ±1%
-
-      // Start slightly detuned, glide into pitch
-      osc.frequency.setValueAtTime(freq * 0.98, now);
-      osc.frequency.exponentialRampToValueAtTime(bend, now + 0.12);
-
-      // Envelope: quick but smooth
-      g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(0.18 / (i + 1), now + 0.05); // softer on upper notes
-      g.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-
-      osc.connect(g);
-      g.connect(hoverMasterGain);
-
-      osc.start(now);
-      osc.stop(now + 0.55);
-
-      // Track voices to stop overlap clipping
-      osc.onended = () => {
-        activeVoices.delete(osc);
-      };
-
-      activeVoices.add(osc);
-      voiceGroup.push(osc);
-    });
-
-    return voiceGroup;
-  };
-
-  // Attach event listeners
-  cards.forEach((card, index) => {
-    const base = HOVER_ROOT_NOTES[index % HOVER_ROOT_NOTES.length];
-    const trigger = () => playChord(base);
-
-    card.addEventListener("mouseenter", trigger);
-    card.addEventListener("focus", trigger);
+  cards.forEach((card) => {
+    card.addEventListener('mouseenter', trigger);
+    card.addEventListener('focus', trigger);
   });
 };
 
