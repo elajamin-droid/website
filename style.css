@@ -7,6 +7,13 @@ body {
   padding: 0;
 }
 
+body.zero-g-mode {
+  overflow: auto;
+  min-height: 100vh;
+  position: relative;
+  touch-action: none;
+}
+
 header {
   margin-top: 40px;
 }
@@ -195,6 +202,18 @@ nav a:hover {
 .about-link:hover {
   color: #b97a16;
   border-color: #ffb300;
+}
+
+.zero-g-item {
+  position: absolute;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: none;
+}
+
+.zero-g-item.is-dragging {
+  cursor: grabbing;
 }
 
 .about p {
