@@ -52,6 +52,12 @@ const detailData = {
   'other-works': {
     title: 'Other Works',
     gallery: [
+      { src: 'images/Other%20Works/Other%20Works/0fp.png' },
+      { src: 'images/Other%20Works/Other%20Works/6be.png' },
+      { src: 'images/Other%20Works/Other%20Works/B6a.png' },
+      { src: 'images/Other%20Works/Other%20Works/Bfc.png' },
+      { src: 'images/Other%20Works/Other%20Works/Fpj.png' },
+      { src: 'images/Other%20Works/Other%20Works/Xdw.png' },
       { src: 'images/Other%20Works/Other%20Works/grehtre.webp' },
     ],
   },
