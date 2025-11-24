@@ -613,11 +613,239 @@ const setupThumbnailTones = () => {
   });
 };
 
+const setupZeroGravityPlayground = () => {
+  const movableSelectors = [
+    '.gallery .card',
+    '.about-link',
+    '#audio-toggle',
+    'header .logo-section img',
+  ];
+
+  const items = movableSelectors.flatMap((selector) =>
+    Array.from(document.querySelectorAll(selector)),
+  );
+
+  if (!items.length) {
+    return;
+  }
+
+  document.body.classList.add('zero-g-mode');
+  document.body.style.height = `${window.innerHeight}px`;
+
+  let boundsWidth = window.innerWidth;
+  let boundsHeight = window.innerHeight;
+  let lastFrame = performance.now();
+
+  const bodies = items.map((el, index) => {
+    const rect = el.getBoundingClientRect();
+    const body = {
+      el,
+      x: rect.left,
+      y: rect.top,
+      width: rect.width,
+      height: rect.height,
+      vx: 0,
+      vy: 0,
+      dragging: false,
+      pointerId: null,
+      offsetX: 0,
+      offsetY: 0,
+      lastDragTime: null,
+      lastDragX: 0,
+      lastDragY: 0,
+    };
+
+    el.classList.add('zero-g-item');
+    el.style.width = `${body.width}px`;
+    el.style.height = `${body.height}px`;
+    el.style.left = `${body.x}px`;
+    el.style.top = `${body.y}px`;
+    el.style.zIndex = `${10 + index}`;
+
+    return body;
+  });
+
+  const clampToBounds = (body) => {
+    const maxX = boundsWidth - body.width;
+    const maxY = boundsHeight - body.height;
+    body.x = Math.min(Math.max(body.x, 0), Math.max(maxX, 0));
+    body.y = Math.min(Math.max(body.y, 0), Math.max(maxY, 0));
+  };
+
+  const applyEdgeBounce = (body) => {
+    if (body.dragging) {
+      clampToBounds(body);
+      return;
+    }
+
+    const maxX = boundsWidth - body.width;
+    const maxY = boundsHeight - body.height;
+
+    if (body.x <= 0 && body.vx < 0) {
+      body.x = 0;
+      body.vx *= -1;
+    }
+    if (body.x >= maxX && body.vx > 0) {
+      body.x = Math.max(maxX, 0);
+      body.vx *= -1;
+    }
+
+    if (body.y <= 0 && body.vy < 0) {
+      body.y = 0;
+      body.vy *= -1;
+    }
+    if (body.y >= maxY && body.vy > 0) {
+      body.y = Math.max(maxY, 0);
+      body.vy *= -1;
+    }
+  };
+
+  const resolveCollision = (a, b) => {
+    const axCenter = a.x + a.width / 2;
+    const ayCenter = a.y + a.height / 2;
+    const bxCenter = b.x + b.width / 2;
+    const byCenter = b.y + b.height / 2;
+
+    const dx = axCenter - bxCenter;
+    const dy = ayCenter - byCenter;
+    const overlapX = (a.width + b.width) / 2 - Math.abs(dx);
+    const overlapY = (a.height + b.height) / 2 - Math.abs(dy);
+
+    if (overlapX <= 0 || overlapY <= 0) {
+      return;
+    }
+
+    if (overlapX < overlapY) {
+      const push = overlapX / 2;
+      const direction = dx > 0 ? 1 : -1;
+      if (!a.dragging) {
+        a.x += push * direction;
+        a.vx = Math.abs(a.vx) * direction;
+      }
+      if (!b.dragging) {
+        b.x -= push * direction;
+        b.vx = -Math.abs(b.vx) * direction;
+      }
+    } else {
+      const push = overlapY / 2;
+      const direction = dy > 0 ? 1 : -1;
+      if (!a.dragging) {
+        a.y += push * direction;
+        a.vy = Math.abs(a.vy) * direction;
+      }
+      if (!b.dragging) {
+        b.y -= push * direction;
+        b.vy = -Math.abs(b.vy) * direction;
+      }
+    }
+  };
+
+  const tick = (now) => {
+    const delta = Math.min((now - lastFrame) / 1000, 0.033);
+    lastFrame = now;
+
+    bodies.forEach((body) => {
+      if (!body.dragging) {
+        body.x += body.vx * delta;
+        body.y += body.vy * delta;
+      }
+      applyEdgeBounce(body);
+    });
+
+    for (let i = 0; i < bodies.length; i += 1) {
+      for (let j = i + 1; j < bodies.length; j += 1) {
+        resolveCollision(bodies[i], bodies[j]);
+      }
+    }
+
+    bodies.forEach((body) => {
+      body.el.style.left = `${body.x}px`;
+      body.el.style.top = `${body.y}px`;
+    });
+
+    requestAnimationFrame(tick);
+  };
+
+  let activeBody = null;
+
+  const handlePointerMove = (event) => {
+    if (!activeBody || activeBody.pointerId !== event.pointerId) {
+      return;
+    }
+
+    const now = performance.now();
+    const dt = activeBody.lastDragTime ? (now - activeBody.lastDragTime) / 1000 : 0;
+    const targetX = event.clientX - activeBody.offsetX;
+    const targetY = event.clientY - activeBody.offsetY;
+
+    if (dt > 0) {
+      activeBody.vx = (event.clientX - activeBody.lastDragX) / dt;
+      activeBody.vy = (event.clientY - activeBody.lastDragY) / dt;
+    }
+
+    activeBody.x = targetX;
+    activeBody.y = targetY;
+    clampToBounds(activeBody);
+
+    activeBody.lastDragTime = now;
+    activeBody.lastDragX = event.clientX;
+    activeBody.lastDragY = event.clientY;
+  };
+
+  const endDrag = (event) => {
+    if (!activeBody || activeBody.pointerId !== event.pointerId) {
+      return;
+    }
+
+    activeBody.dragging = false;
+    activeBody.el.classList.remove('is-dragging');
+    if (
+      typeof activeBody.el.releasePointerCapture === 'function' &&
+      typeof activeBody.el.hasPointerCapture === 'function' &&
+      activeBody.el.hasPointerCapture(activeBody.pointerId)
+    ) {
+      activeBody.el.releasePointerCapture(activeBody.pointerId);
+    }
+    activeBody.pointerId = null;
+    activeBody = null;
+  };
+
+  bodies.forEach((body) => {
+    body.el.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      activeBody = body;
+      body.dragging = true;
+      body.pointerId = event.pointerId;
+      body.offsetX = event.clientX - body.x;
+      body.offsetY = event.clientY - body.y;
+      body.lastDragTime = performance.now();
+      body.lastDragX = event.clientX;
+      body.lastDragY = event.clientY;
+      body.el.classList.add('is-dragging');
+      body.el.setPointerCapture(event.pointerId);
+    });
+  });
+
+  window.addEventListener('pointermove', handlePointerMove);
+  window.addEventListener('pointerup', endDrag);
+  window.addEventListener('pointercancel', endDrag);
+
+  window.addEventListener('resize', () => {
+    boundsWidth = window.innerWidth;
+    boundsHeight = window.innerHeight;
+    document.body.style.height = `${boundsHeight}px`;
+    bodies.forEach((body) => clampToBounds(body));
+  });
+
+  requestAnimationFrame(tick);
+};
+
 const init = () => {
   renderDetailPage();
   setupLightbox();
   setupAudioToggle();
   setupThumbnailTones();
+  setupZeroGravityPlayground();
 };
 
 if (document.readyState === 'loading') {
