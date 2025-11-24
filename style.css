@@ -210,6 +210,7 @@ footer {
 
 .detail-page h1 {
   margin: 0;
+  text-align: center;
 }
 
 .back-link {
@@ -250,6 +251,7 @@ body[data-gallery="about"] main {
   font-size: 1em;
   line-height: 1.6;
   max-width: 780px;
+  text-align: center;
 }
 
 .about-bio {
