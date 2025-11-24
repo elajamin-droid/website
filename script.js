@@ -75,28 +75,47 @@ const detailData = {
   }
 };
 
-let hoverAudioElement;
+let audioContext;
 let isHoverSoundMuted = true;
 
-const loadHoverSound = () => {
-  if (!hoverAudioElement) {
-    hoverAudioElement = new Audio('Sounds/Woep.ogg');
-    hoverAudioElement.preload = 'auto';
-    hoverAudioElement.volume = 0.9;
+const ensureAudioContext = () => {
+  if (!audioContext) {
+    audioContext = new AudioContext();
   }
 };
 
-const playHoverSound = () => {
+const playHoverSound = (playbackRate = 1) => {
   if (isHoverSoundMuted) return;
 
-  loadHoverSound();
-  const sound = hoverAudioElement.cloneNode(true);
-  sound.volume = hoverAudioElement.volume;
-
-  const playPromise = sound.play();
-  if (playPromise?.catch) {
-    playPromise.catch(() => {});
+  ensureAudioContext();
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
   }
+
+  const oscillator = audioContext.createOscillator();
+  const filter = audioContext.createBiquadFilter();
+  const gainNode = audioContext.createGain();
+
+  const now = audioContext.currentTime;
+  const duration = 0.18;
+  const baseFrequency = 520 * playbackRate;
+
+  oscillator.type = 'sine';
+  oscillator.frequency.setValueAtTime(baseFrequency, now);
+  oscillator.frequency.exponentialRampToValueAtTime(baseFrequency * 0.65, now + duration);
+
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(1400, now);
+  filter.frequency.exponentialRampToValueAtTime(650, now + duration);
+  filter.Q.value = 1.2;
+
+  gainNode.gain.setValueAtTime(0, now);
+  gainNode.gain.linearRampToValueAtTime(0.24, now + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+  oscillator.connect(filter).connect(gainNode).connect(audioContext.destination);
+  oscillator.start(now);
+  oscillator.stop(now + duration);
 };
 
 const updateAudioToggleButton = () => {
@@ -561,12 +580,25 @@ const setupLightbox = () => {
 };
 
 const setupThumbnailTones = () => {
-  const cards = Array.from(document.querySelectorAll('.gallery .card'));
+  const cards = Array.from(document.querySelectorAll('.gallery .card')).sort((a, b) => {
+    const position = a.compareDocumentPosition(b);
+    if (position & Node.DOCUMENT_POSITION_FOLLOWING) return -1;
+    if (position & Node.DOCUMENT_POSITION_PRECEDING) return 1;
+    return 0;
+  });
+
   if (!cards.length) return;
 
-  const trigger = () => playHoverSound();
+  const minRate = 0.85;
+  const maxRate = 1.15;
+  const step = cards.length > 1 ? (maxRate - minRate) / (cards.length - 1) : 0;
 
-  cards.forEach((card) => {
+  cards.forEach((card, index) => {
+    const playbackRate = minRate + step * index;
+    card.dataset.playbackRate = playbackRate.toFixed(3);
+
+    const trigger = () => playHoverSound(Number(card.dataset.playbackRate));
+
     card.addEventListener('mouseenter', trigger);
     card.addEventListener('focus', trigger);
   });
