@@ -36,24 +36,19 @@ const detailData = {
     },
     projects: [
       {
-        title: 'JellyFrog',
         gallery: [
           {
             src: 'images/Animations/Animations/JellyFrog/JellyFrog.gif',
-            alt: 'Looping JellyFrog animation',
           },
         ],
       },
       {
-        title: 'Scout walk',
         gallery: [
           {
             src: 'images/Animations/Animations/ScoutWalk/SideFront.gif',
-            alt: 'Scout walking animation from the front',
           },
           {
             src: 'images/Animations/Animations/ScoutWalk/Side.gif',
-            alt: 'Side profile of the scout walk cycle',
           },
         ],
       },
@@ -216,7 +211,7 @@ const renderDetailPage = () => {
 
   const main = document.createElement('main');
 
-  const createGallery = (items) => {
+  const createGallery = (items, { includeAlt = true } = {}) => {
     const gallerySection = document.createElement('section');
     gallerySection.className = 'detail-gallery';
 
@@ -226,14 +221,14 @@ const renderDetailPage = () => {
       button.className = 'detail-item';
       const fullImage = item.full || item.src;
       button.dataset.full = fullImage;
-      if (item.alt) {
+      if (includeAlt && item.alt) {
         button.dataset.alt = item.alt;
         button.title = item.alt;
       }
 
       const image = document.createElement('img');
       image.src = item.thumb || item.src;
-      image.alt = item.alt || '';
+      image.alt = includeAlt && item.alt ? item.alt : '';
       image.loading = 'lazy';
       button.appendChild(image);
       gallerySection.appendChild(button);
@@ -268,22 +263,25 @@ const renderDetailPage = () => {
   }
 
   if (Array.isArray(detail.projects) && detail.projects.length) {
-    detail.projects.forEach((project) => {
+    const createDivider = () => {
+      const divider = document.createElement('div');
+      divider.className = 'game-divider';
+      divider.setAttribute('aria-hidden', 'true');
+      return divider;
+    };
+
+    const includeAlt = pageKey !== 'animations';
+
+    detail.projects.forEach((project, index) => {
       const projectSection = document.createElement('section');
       projectSection.className = 'detail-project';
-
-      if (project.title) {
-        const projectHeading = document.createElement('h2');
-        projectHeading.textContent = project.title;
-        projectSection.appendChild(projectHeading);
-      }
 
       if (project.video) {
         const projectVideoContainer = document.createElement('div');
         projectVideoContainer.className = 'video-container';
         const projectIframe = document.createElement('iframe');
         projectIframe.src = project.video.src;
-        projectIframe.title = project.video.title || project.title || detail.title;
+        projectIframe.title = project.video.title || detail.title;
         projectIframe.loading = 'lazy';
         projectIframe.allow =
           'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
@@ -301,10 +299,13 @@ const renderDetailPage = () => {
       }
 
       if (Array.isArray(project.gallery) && project.gallery.length) {
-        projectSection.appendChild(createGallery(project.gallery));
+        projectSection.appendChild(createGallery(project.gallery, { includeAlt }));
       }
 
       if (projectSection.childNodes.length) {
+        if (index > 0) {
+          main.appendChild(createDivider());
+        }
         main.appendChild(projectSection);
       }
     });
