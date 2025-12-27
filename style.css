@@ -296,6 +296,20 @@ body[data-gallery="about"] main {
   border-color: rgba(255, 159, 28, 0.7);
 }
 
+.detail-project {
+  margin-bottom: 40px;
+}
+
+.detail-project h2 {
+  margin: 0 0 16px;
+  text-align: left;
+}
+
+.detail-project .detail-description {
+  margin: 0 0 24px;
+  text-align: left;
+}
+
 .about-bio {
   display: flex;
   align-items: center;

@@ -20,10 +20,10 @@ const detailData = {
     description:
       '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
     gallery: [
-      { src: 'images/Characters/Characters/Screenshot_2025-10-21_202456.webp' },
-      { src: 'images/Characters/Characters/Screenshot_2025-10-21_202831.webp' },
+      { src: 'images/Characters/JoepLiz/Screenshot_2025-10-21_202456.webp' },
+      { src: 'images/Characters/JoepLiz/Screenshot_2025-10-21_202831.webp' },
       {
-        src: 'images/Characters/Characters/Reference.webp',
+        src: 'images/Characters/JoepLiz/Reference.webp',
         alt: 'Concept art by Joep Eilander',
       },
     ],
@@ -34,31 +34,54 @@ const detailData = {
       src: 'https://www.youtube.com/embed/BMqpDYKC6Ms?rel=0&controls=1&modestbranding=1',
       title: 'Moois Genoeg',
     },
-    gallery: [{ src: 'images/Animations/Animations/JellyFrog.gif' }],
+    projects: [
+      {
+        title: 'JellyFrog',
+        gallery: [
+          {
+            src: 'images/Animations/Animations/JellyFrog/JellyFrog.gif',
+            alt: 'Looping JellyFrog animation',
+          },
+        ],
+      },
+      {
+        title: 'Scout walk',
+        gallery: [
+          {
+            src: 'images/Animations/Animations/ScoutWalk/SideFront.gif',
+            alt: 'Scout walking animation from the front',
+          },
+          {
+            src: 'images/Animations/Animations/ScoutWalk/Side.gif',
+            alt: 'Side profile of the scout walk cycle',
+          },
+        ],
+      },
+    ],
   },
   games: {
     title: 'Games',
     description:
       '<p>Assets I made for Meliora whilst working at M2H, base textures made by <a href="https://jc_ptrs.artstation.com/">Carl Peters</a>.</p>',
     gallery: [
-      { src: 'images/Games/Games/Materials2.webp' },
-      { src: 'images/Games/Games/Unnamed.webp' },
-      { src: 'images/Games/Games/efwgeqq-1.webp' },
-      { src: 'images/Games/Games/fefefeefe-0.webp' },
-      { src: 'images/Games/Games/fefefeefefffeefwef-0.webp' },
-      { src: 'images/Games/Games/media4.gif' },
+      { src: 'images/Games/Meliora/Materials2.webp' },
+      { src: 'images/Games/Meliora/Unnamed.webp' },
+      { src: 'images/Games/Meliora/efwgeqq-1.webp' },
+      { src: 'images/Games/Meliora/fefefeefe-0.webp' },
+      { src: 'images/Games/Meliora/fefefeefefffeefwef-0.webp' },
+      { src: 'images/Games/Meliora/media4.gif' },
     ],
   },
   'other-works': {
     title: 'Other Works',
     gallery: [
-      { src: 'images/Other%20Works/Other%20Works/0fp.png' },
-      { src: 'images/Other%20Works/Other%20Works/6be.png' },
-      { src: 'images/Other%20Works/Other%20Works/B6a.png' },
-      { src: 'images/Other%20Works/Other%20Works/Bfc.png' },
-      { src: 'images/Other%20Works/Other%20Works/Fpj.png' },
-      { src: 'images/Other%20Works/Other%20Works/Xdw.png' },
-      { src: 'images/Other%20Works/Other%20Works/grehtre.webp' },
+      { src: 'images/Other%20Works/Chaos%20Blender/0fp.png' },
+      { src: 'images/Other%20Works/Chaos%20Blender/6be.png' },
+      { src: 'images/Other%20Works/Chaos%20Blender/B6a.png' },
+      { src: 'images/Other%20Works/Chaos%20Blender/Bfc.png' },
+      { src: 'images/Other%20Works/Chaos%20Blender/Fpj.png' },
+      { src: 'images/Other%20Works/Chaos%20Blender/Xdw.png' },
+      { src: 'images/Other%20Works/Chaos%20Blender/grehtre.webp' },
     ],
   },
   about: {
@@ -193,6 +216,32 @@ const renderDetailPage = () => {
 
   const main = document.createElement('main');
 
+  const createGallery = (items) => {
+    const gallerySection = document.createElement('section');
+    gallerySection.className = 'detail-gallery';
+
+    items.forEach((item) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'detail-item';
+      const fullImage = item.full || item.src;
+      button.dataset.full = fullImage;
+      if (item.alt) {
+        button.dataset.alt = item.alt;
+        button.title = item.alt;
+      }
+
+      const image = document.createElement('img');
+      image.src = item.thumb || item.src;
+      image.alt = item.alt || '';
+      image.loading = 'lazy';
+      button.appendChild(image);
+      gallerySection.appendChild(button);
+    });
+
+    return gallerySection;
+  };
+
   if (detail.video) {
     const videoContainer = document.createElement('div');
     videoContainer.className = 'video-container';
@@ -218,30 +267,49 @@ const renderDetailPage = () => {
     main.appendChild(descriptionSection);
   }
 
-  if (Array.isArray(detail.gallery) && detail.gallery.length) {
-    const gallerySection = document.createElement('section');
-    gallerySection.className = 'detail-gallery';
+  if (Array.isArray(detail.projects) && detail.projects.length) {
+    detail.projects.forEach((project) => {
+      const projectSection = document.createElement('section');
+      projectSection.className = 'detail-project';
 
-    detail.gallery.forEach((item) => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'detail-item';
-      const fullImage = item.full || item.src;
-      button.dataset.full = fullImage;
-      if (item.alt) {
-        button.dataset.alt = item.alt;
-        button.title = item.alt;
+      if (project.title) {
+        const projectHeading = document.createElement('h2');
+        projectHeading.textContent = project.title;
+        projectSection.appendChild(projectHeading);
       }
 
-      const image = document.createElement('img');
-      image.src = item.thumb || item.src;
-      image.alt = item.alt || '';
-      image.loading = 'lazy';
-      button.appendChild(image);
-      gallerySection.appendChild(button);
-    });
+      if (project.video) {
+        const projectVideoContainer = document.createElement('div');
+        projectVideoContainer.className = 'video-container';
+        const projectIframe = document.createElement('iframe');
+        projectIframe.src = project.video.src;
+        projectIframe.title = project.video.title || project.title || detail.title;
+        projectIframe.loading = 'lazy';
+        projectIframe.allow =
+          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+        projectIframe.referrerPolicy = 'strict-origin-when-cross-origin';
+        projectIframe.allowFullscreen = true;
+        projectVideoContainer.appendChild(projectIframe);
+        projectSection.appendChild(projectVideoContainer);
+      }
 
-    main.appendChild(gallerySection);
+      if (project.description) {
+        const projectDescription = document.createElement('div');
+        projectDescription.className = 'detail-description';
+        projectDescription.innerHTML = project.description;
+        projectSection.appendChild(projectDescription);
+      }
+
+      if (Array.isArray(project.gallery) && project.gallery.length) {
+        projectSection.appendChild(createGallery(project.gallery));
+      }
+
+      if (projectSection.childNodes.length) {
+        main.appendChild(projectSection);
+      }
+    });
+  } else if (Array.isArray(detail.gallery) && detail.gallery.length) {
+    main.appendChild(createGallery(detail.gallery));
   }
 
   detailRoot.appendChild(main);
