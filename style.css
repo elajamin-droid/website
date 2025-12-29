@@ -15,6 +15,11 @@ header {
   display: inline-block;
 }
 
+.logo-image {
+  width: min(300px, 80vw);
+  height: auto;
+}
+
 h1 {
   font-size: 1.5em;
   margin: 5px 0;
