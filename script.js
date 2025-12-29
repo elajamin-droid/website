@@ -55,6 +55,19 @@ const detailData = {
             alt: 'Concept art by Joep Eilander',
           },
         ],
+        description: `
+          <p>
+            Concept art by
+            <a
+              href="https://www.instagram.com/joep_eilander/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Joep Eilander
+            </a>
+            .
+          </p>
+        `,
       },
     ],
   },
