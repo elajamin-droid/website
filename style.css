@@ -16,7 +16,7 @@ header {
 }
 
 .logo-image {
-  width: min(300px, 80vw);
+  width: min(1000px, 80vw);
   height: auto;
 }
 
