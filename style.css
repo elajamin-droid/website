@@ -11,6 +11,16 @@ header {
   margin-top: 40px;
 }
 
+.logo-section {
+  display: inline-block;
+}
+
+h1 {
+  font-size: 1.5em;
+  margin: 5px 0;
+  text-transform: none;
+}
+
 .audio-toggle {
   position: fixed;
   top: 16px;
@@ -30,38 +40,6 @@ header {
   display: block;
 }
 
-.logo-section {
-  display: inline-block;
-}
-
-.logo {
-  width: 80px;
-  display: block;
-  margin: 0 auto 10px;
-}
-
-h1 {
-  font-size: 1.5em;
-  margin: 5px 0;
-  text-transform: none;
-}
-
-.tagline {
-  font-size: 0.9em;
-  color: #666;
-  margin-bottom: 15px;
-}
-
-nav ul {
-  list-style: none;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  gap: 25px;
-  font-weight: bold;
-  margin-bottom: 40px;
-}
-
 a {
   color: #c67a00;
   text-decoration: none;
@@ -70,16 +48,6 @@ a {
 
 a:hover {
   color: #ff9f1c;
-}
-
-nav a {
-  text-decoration: none;
-  color: #b97a16;
-  transition: color 0.3s;
-}
-
-nav a:hover {
-  color: #ffb300;
 }
 
 .game-embed-wrapper {
@@ -175,17 +143,17 @@ nav a:hover {
   padding: 0 20px;
 }
 
+.about h2 {
+  font-size: 1.6em;
+  margin-bottom: 10px;
+}
+
 .about-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 32px;
   padding: 20px;
-}
-
-.about h2 {
-  font-size: 1.6em;
-  margin-bottom: 10px;
 }
 
 .about-link {
@@ -204,16 +172,6 @@ nav a:hover {
 .about p {
   font-size: 1em;
   line-height: 1.6;
-}
-
-footer {
-  padding: 30px 0 50px;
-}
-
-.footer-note {
-  margin: 0;
-  font-size: 0.9em;
-  color: #8c6a2e;
 }
 
 /* Detail pages */
@@ -283,11 +241,6 @@ body[data-gallery="about"] main {
 
 .detail-description p {
   margin: 0;
-}
-
-.detail-lead {
-  font-weight: 600;
-  letter-spacing: 0.2px;
 }
 
 .detail-description a {
