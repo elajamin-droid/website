@@ -74,6 +74,9 @@ const detailData = {
           {
             src: 'images/Characters/Vector/Golly.svg',
           },
+          {
+            src: 'images/Characters/Vector/Bird.svg',
+          },
         ],
       },
     ],
