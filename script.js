@@ -19,9 +19,7 @@ const detailData = {
     title: 'Characters',
     projects: [
       {
-        title: 'Oenkelflip',
         turntable: {
-          alt: 'Oenkelflip turntable render',
           frames: [
             'images/Characters/OenkelFlip/Turntable_886.webp',
             'images/Characters/OenkelFlip/Turntable_887.webp',
@@ -41,10 +39,10 @@ const detailData = {
           ],
         },
         gallery: [
-          { src: 'images/Characters/OenkelFlip/3D.png', alt: 'Oenkelflip 3D sculpt blockout' },
-          { src: 'images/Characters/OenkelFlip/Unpainted.jpg', alt: 'Unpainted Oenkelflip figure' },
-          { src: 'images/Characters/OenkelFlip/Unvarnished.jpg', alt: 'Hand-painted Oenkelflip figure without varnish' },
-          { src: 'images/Characters/OenkelFlip/Varnished.jpg', alt: 'Varnished Oenkelflip figure' },
+          { src: 'images/Characters/OenkelFlip/3D.png'},
+          { src: 'images/Characters/OenkelFlip/Unpainted.jpg'},
+          { src: 'images/Characters/OenkelFlip/Unvarnished.jpg'},
+          { src: 'images/Characters/OenkelFlip/Varnished.jpg'},
         ],
         gallerySize: 'compact',
       },
