@@ -17,7 +17,6 @@ const detailData = {
   },
   characters: {
     title: 'Characters',
-    description: '<p class="detail-lead">Character explorations and turntables.</p>',
     projects: [
       {
         title: 'Oenkelflip',
@@ -50,8 +49,6 @@ const detailData = {
         gallerySize: 'compact',
       },
       {
-        description:
-          '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
         gallery: [
           { src: 'images/Characters/JoepLiz/Screenshot_2025-10-21_202456.webp' },
           { src: 'images/Characters/JoepLiz/Screenshot_2025-10-21_202831.webp' },
@@ -91,8 +88,6 @@ const detailData = {
   },
   games: {
     title: 'Games',
-    description:
-      '<p>Assets I made for Meliora whilst working at M2H, base textures made by <a href="https://jc_ptrs.artstation.com/">Carl Peters</a>.</p>',
     gallery: [
       { src: 'images/Games/Meliora/Materials2.webp' },
       { src: 'images/Games/Meliora/Unnamed.webp' },
@@ -698,7 +693,7 @@ const setupLightbox = () => {
           const rect = trigger.getBoundingClientRect();
           const x = clientX - rect.left;
           const progress = Math.min(Math.max(x / rect.width, 0), 1);
-          const nextIndex = Math.min(Math.floor(progress * frames.length), frames.length - 1);
+          const nextIndex = frames.length - 1 - Math.min(Math.floor(progress * frames.length), frames.length - 1);
           updateFrame(nextIndex);
         };
 
