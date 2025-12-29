@@ -17,14 +17,49 @@ const detailData = {
   },
   characters: {
     title: 'Characters',
-    description:
-      '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
-    gallery: [
-      { src: 'images/Characters/JoepLiz/Screenshot_2025-10-21_202456.webp' },
-      { src: 'images/Characters/JoepLiz/Screenshot_2025-10-21_202831.webp' },
+    description: '<p class="detail-lead">Character explorations and turntables.</p>',
+    projects: [
       {
-        src: 'images/Characters/JoepLiz/Reference.webp',
-        alt: 'Concept art by Joep Eilander',
+        title: 'Oenkelflip',
+        turntable: {
+          alt: 'Oenkelflip turntable render',
+          frames: [
+            'images/Characters/OenkelFlip/Turntable_886.webp',
+            'images/Characters/OenkelFlip/Turntable_887.webp',
+            'images/Characters/OenkelFlip/Turntable_888.webp',
+            'images/Characters/OenkelFlip/Turntable_889.webp',
+            'images/Characters/OenkelFlip/Turntable_890.webp',
+            'images/Characters/OenkelFlip/Turntable_891.webp',
+            'images/Characters/OenkelFlip/Turntable_892.webp',
+            'images/Characters/OenkelFlip/Turntable_893.webp',
+            'images/Characters/OenkelFlip/Turntable_894.webp',
+            'images/Characters/OenkelFlip/Turntable_895.webp',
+            'images/Characters/OenkelFlip/Turntable_896.webp',
+            'images/Characters/OenkelFlip/Turntable_897.webp',
+            'images/Characters/OenkelFlip/Turntable_898.webp',
+            'images/Characters/OenkelFlip/Turntable_899.webp',
+            'images/Characters/OenkelFlip/Turntable_900.webp',
+          ],
+        },
+        gallery: [
+          { src: 'images/Characters/OenkelFlip/3D.png', alt: 'Oenkelflip 3D sculpt blockout' },
+          { src: 'images/Characters/OenkelFlip/Unpainted.jpg', alt: 'Unpainted Oenkelflip figure' },
+          { src: 'images/Characters/OenkelFlip/Unvarnished.jpg', alt: 'Hand-painted Oenkelflip figure without varnish' },
+          { src: 'images/Characters/OenkelFlip/Varnished.jpg', alt: 'Varnished Oenkelflip figure' },
+        ],
+        gallerySize: 'compact',
+      },
+      {
+        description:
+          '<p>Concept art by <a href="https://www.instagram.com/joep.eilander?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">Joep Eilander</a>.</p>',
+        gallery: [
+          { src: 'images/Characters/JoepLiz/Screenshot_2025-10-21_202456.webp' },
+          { src: 'images/Characters/JoepLiz/Screenshot_2025-10-21_202831.webp' },
+          {
+            src: 'images/Characters/JoepLiz/Reference.webp',
+            alt: 'Concept art by Joep Eilander',
+          },
+        ],
       },
     ],
   },
@@ -211,9 +246,12 @@ const renderDetailPage = () => {
 
   const main = document.createElement('main');
 
-  const createGallery = (items, { includeAlt = true } = {}) => {
+  const createGallery = (items, { includeAlt = true, layout } = {}) => {
     const gallerySection = document.createElement('section');
     gallerySection.className = 'detail-gallery';
+    if (layout) {
+      gallerySection.classList.add(`detail-gallery--${layout}`);
+    }
 
     items.forEach((item) => {
       const button = document.createElement('button');
@@ -235,6 +273,31 @@ const renderDetailPage = () => {
     });
 
     return gallerySection;
+  };
+
+  const createTurntable = (turntable) => {
+    const turntableSection = document.createElement('section');
+    turntableSection.className = 'detail-turntable';
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'detail-item turntable-item';
+    button.dataset.turntable = 'true';
+    button.dataset.frames = (turntable.frames || []).join(',');
+    button.dataset.full = turntable.frames?.[0] || '';
+
+    if (turntable.alt) {
+      button.dataset.alt = turntable.alt;
+      button.setAttribute('aria-label', turntable.alt);
+    }
+
+    const image = document.createElement('img');
+    image.src = turntable.frames?.[0] || '';
+    image.alt = turntable.alt || '';
+    image.loading = 'lazy';
+    button.appendChild(image);
+    turntableSection.appendChild(button);
+    return turntableSection;
   };
 
   if (detail.video) {
@@ -276,6 +339,12 @@ const renderDetailPage = () => {
       const projectSection = document.createElement('section');
       projectSection.className = 'detail-project';
 
+      if (project.title) {
+        const heading = document.createElement('h2');
+        heading.textContent = project.title;
+        projectSection.appendChild(heading);
+      }
+
       if (project.video) {
         const projectVideoContainer = document.createElement('div');
         projectVideoContainer.className = 'video-container';
@@ -291,6 +360,10 @@ const renderDetailPage = () => {
         projectSection.appendChild(projectVideoContainer);
       }
 
+      if (project.turntable) {
+        projectSection.appendChild(createTurntable(project.turntable));
+      }
+
       if (project.description) {
         const projectDescription = document.createElement('div');
         projectDescription.className = 'detail-description';
@@ -299,7 +372,12 @@ const renderDetailPage = () => {
       }
 
       if (Array.isArray(project.gallery) && project.gallery.length) {
-        projectSection.appendChild(createGallery(project.gallery, { includeAlt }));
+        projectSection.appendChild(
+          createGallery(project.gallery, {
+            includeAlt,
+            layout: project.gallerySize,
+          })
+        );
       }
 
       if (projectSection.childNodes.length) {
@@ -596,6 +674,46 @@ const setupLightbox = () => {
     const altText = trigger.dataset.alt || trigger.querySelector('img')?.alt || '';
     if (altText && !trigger.hasAttribute('aria-label')) {
       trigger.setAttribute('aria-label', altText);
+    }
+
+    if (trigger.dataset.turntable === 'true') {
+      const frames = (trigger.dataset.frames || '')
+        .split(',')
+        .map((src) => src.trim())
+        .filter(Boolean);
+
+      if (frames.length) {
+        const image = trigger.querySelector('img');
+        let frameIndex = 0;
+
+        const updateFrame = (index) => {
+          const safeIndex = ((index % frames.length) + frames.length) % frames.length;
+          frameIndex = safeIndex;
+          if (image) {
+            image.src = frames[safeIndex];
+          }
+        };
+
+        const handleHover = (clientX) => {
+          const rect = trigger.getBoundingClientRect();
+          const x = clientX - rect.left;
+          const progress = Math.min(Math.max(x / rect.width, 0), 1);
+          const nextIndex = Math.min(Math.floor(progress * frames.length), frames.length - 1);
+          updateFrame(nextIndex);
+        };
+
+        trigger.addEventListener('mousemove', (event) => handleHover(event.clientX));
+        trigger.addEventListener('touchmove', (event) => {
+          if (event.touches && event.touches[0]) {
+            const touch = event.touches[0];
+            handleHover(touch.clientX);
+          }
+        });
+
+        trigger.addEventListener('mouseleave', () => {
+          updateFrame(0);
+        });
+      }
     }
 
     trigger.addEventListener('click', () => openLightbox(index));

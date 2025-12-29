@@ -362,6 +362,10 @@ body[data-gallery="about"] main {
   contain-intrinsic-size: 300px;
 }
 
+.detail-gallery--compact {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
 .detail-item {
   padding: 0;
   border: none;
@@ -417,6 +421,24 @@ body[data-gallery="about"] main {
 .detail-item:hover::after,
 .detail-item:focus-visible::after {
   opacity: 1;
+}
+
+.detail-turntable {
+  margin-bottom: 22px;
+}
+
+.turntable-item {
+  display: block;
+  width: min(620px, 100%);
+  margin: 0 auto;
+}
+
+.turntable-item img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
 }
 
 .card:hover img {
