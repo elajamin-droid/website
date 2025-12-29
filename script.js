@@ -69,6 +69,14 @@ const detailData = {
           </p>
         `,
       },
+      {
+        gallery: [
+          {
+            src: 'images/Characters/Vector/Golly.svg',
+            alt: 'Vector illustration of Golly',
+          },
+        ],
+      },
     ],
   },
   animations: {
