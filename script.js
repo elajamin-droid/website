@@ -52,14 +52,14 @@ const detailData = {
           { src: 'images/Characters/JoepLiz/Screenshot_2025-10-21_202831.webp' },
           {
             src: 'images/Characters/JoepLiz/Reference.webp',
-            alt: 'Concept art by Joep Eilander',
+            alt: 'Art by Joep Eilander',
           },
         ],
         description: `
           <p>
             Concept art by
             <a
-              href="https://www.instagram.com/joep_eilander/"
+              href="https://www.instagram.com/joep.eilander"
               target="_blank"
               rel="noopener noreferrer"
             >
