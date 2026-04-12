@@ -81,27 +81,34 @@ const detailData = {
       },
     ],
   },
-  animations: {
-    title: 'Animations',
+  'moois-genoeg': {
+    title: 'Moois Genoeg',
+    description: `
+      <p>A music video made by myself, Tijn Kroon and Lucas Carver. </p>
+      <p>I was responsible for all animation, direction, character models of Vogeltje and Hare, some environments sets and editing.</p>
+    `,
     video: {
-      src: 'https://www.youtube.com/embed/BMqpDYKC6Ms?rel=0&controls=1&modestbranding=1',
+      src: 'images/Moois%20Genoeg/MooisGenoeg.mp4',
       title: 'Moois Genoeg',
     },
+  },
+  animations: {
+    title: 'Animations',
     projects: [
       {
         gallery: [
           {
-            src: 'images/Animations/Animations/JellyFrog/JellyFrog.gif',
+            src: 'images/Animations/JellyFrog.gif',
           },
         ],
       },
       {
         gallery: [
           {
-            src: 'images/Animations/Animations/ScoutWalk/SideFront.gif',
+            src: 'images/Animations/SideFront.gif',
           },
           {
-            src: 'images/Animations/Animations/ScoutWalk/Side.gif',
+            src: 'images/Animations/Side.gif',
           },
         ],
       },
@@ -116,6 +123,17 @@ const detailData = {
       { src: 'images/Games/Meliora/fefefeefe-0.webp' },
       { src: 'images/Games/Meliora/fefefeefefffeefwef-0.webp' },
       { src: 'images/Games/Meliora/media4.gif' },
+    ],
+  },
+  'book-of-lightning': {
+    title: 'Book of Lightning',
+    video: {
+      src: 'images/Book%20of%20Lightning/Edited_001.mp4',
+      title: 'Book of Lightning edit',
+    },
+    gallery: [
+      { src: 'images/Book%20of%20Lightning/MainCam_004.png' },
+      { src: 'images/Book%20of%20Lightning/Progress.gif' },
     ],
   },
   'other-works': {
@@ -319,14 +337,29 @@ const renderDetailPage = () => {
   if (detail.video) {
     const videoContainer = document.createElement('div');
     videoContainer.className = 'video-container';
-    const iframe = document.createElement('iframe');
-    iframe.src = detail.video.src;
-    iframe.title = detail.video.title || detail.title;
-    iframe.loading = 'lazy';
-    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-    iframe.referrerPolicy = 'strict-origin-when-cross-origin';
-    iframe.allowFullscreen = true;
-    videoContainer.appendChild(iframe);
+    
+    if (detail.video.src.endsWith('.mp4')) {
+      const video = document.createElement('video');
+      video.src = detail.video.src;
+      video.title = detail.video.title || detail.title;
+      video.controls = true;
+      video.muted = true;
+      video.loop = true;
+      videoContainer.appendChild(video);
+      // Delay autoplay to allow page to load
+      setTimeout(() => {
+        video.play();
+      }, 1000);
+    } else {
+      const iframe = document.createElement('iframe');
+      iframe.src = detail.video.src;
+      iframe.title = detail.video.title || detail.title;
+      iframe.loading = 'lazy';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.allowFullscreen = true;
+      videoContainer.appendChild(iframe);
+    }
     main.appendChild(videoContainer);
   }
 
@@ -364,15 +397,30 @@ const renderDetailPage = () => {
       if (project.video) {
         const projectVideoContainer = document.createElement('div');
         projectVideoContainer.className = 'video-container';
-        const projectIframe = document.createElement('iframe');
-        projectIframe.src = project.video.src;
-        projectIframe.title = project.video.title || detail.title;
-        projectIframe.loading = 'lazy';
-        projectIframe.allow =
-          'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
-        projectIframe.referrerPolicy = 'strict-origin-when-cross-origin';
-        projectIframe.allowFullscreen = true;
-        projectVideoContainer.appendChild(projectIframe);
+        
+        if (project.video.src.endsWith('.mp4')) {
+          const projectVideo = document.createElement('video');
+          projectVideo.src = project.video.src;
+          projectVideo.title = project.video.title || detail.title;
+          projectVideo.controls = true;
+          projectVideo.muted = true;
+          projectVideo.loop = true;
+          projectVideoContainer.appendChild(projectVideo);
+          // Delay autoplay to allow page to load
+          setTimeout(() => {
+            projectVideo.play();
+          }, 1000);
+        } else {
+          const projectIframe = document.createElement('iframe');
+          projectIframe.src = project.video.src;
+          projectIframe.title = project.video.title || detail.title;
+          projectIframe.loading = 'lazy';
+          projectIframe.allow =
+            'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+          projectIframe.referrerPolicy = 'strict-origin-when-cross-origin';
+          projectIframe.allowFullscreen = true;
+          projectVideoContainer.appendChild(projectIframe);
+        }
         projectSection.appendChild(projectVideoContainer);
       }
 
