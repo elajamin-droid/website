@@ -80,10 +80,10 @@ a:hover {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: flex-start;
+  align-items: center;
   gap: 25px;
   max-width: 900px;
-  margin: 0 auto 60px;
+  margin: 20px auto 60px;
   padding: 0 20px;
   content-visibility: auto;
   contain-intrinsic-size: 320px;
@@ -108,7 +108,7 @@ a:hover {
   color: inherit;
   gap: 10px;
   background: transparent;
-  padding: 0;
+  padding: 10px;
   border-radius: 0;
   transition: transform 0.2s ease;
   will-change: transform;
@@ -118,6 +118,7 @@ a:hover {
 
 .card:hover {
   transform: scale(1.05);
+  z-index: 10;
 }
 
 .card img {
